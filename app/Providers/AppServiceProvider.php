@@ -20,6 +20,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Illuminate\Support\Facades\Schema::defaultStringLength(191);
+
         if (str_contains(config('app.url'), 'https://')) {
             URL::forceScheme('https');
         }
