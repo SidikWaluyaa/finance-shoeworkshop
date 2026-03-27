@@ -20,6 +20,9 @@
 
     {{-- ApexCharts --}}
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.0/dist/apexcharts.min.js" defer></script>
+
+    {{-- SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body
     class="min-h-screen transition-colors duration-300"
@@ -229,67 +232,60 @@
     </nav>
 
     {{-- ===== GLOBAL TOAST ===== --}}
-    <div x-data="{
-            notifications: [],
-            add(n) {
-                const id = Date.now();
-                this.notifications.push({ id, type: n.type, message: n.message, show: true });
-                setTimeout(() => {
-                    this.close(id);
-                }, 4500);
-            },
-            close(id) {
-                const i = this.notifications.findIndex(x => x.id === id);
-                if (i !== -1) {
-                    this.notifications[i].show = false;
-                    setTimeout(() => {
-                        this.notifications = this.notifications.filter(x => x.id !== id);
-                    }, 400);
-                }
-            },
-            init() {
-                @if(session('success')) setTimeout(() => this.add({ type: 'success', message: '{{ session('success') }}' }), 100); @endif
-                @if(session('error')) setTimeout(() => this.add({ type: 'error', message: '{{ session('error') }}' }), 100); @endif
-                @if(session('warning')) setTimeout(() => this.add({ type: 'warning', message: '{{ session('warning') }}' }), 100); @endif
+    {{-- ===== GLOBAL SWEETALERT2 NOTIFICATIONS ===== --}}
+    <script>
+        // SweetAlert2 Toast config
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
             }
-         }"
-         @alert.window="add(Array.isArray($event.detail) ? $event.detail[0] : $event.detail)"
-         @notify.window="add(Array.isArray($event.detail) ? $event.detail[0] : $event.detail)"
-         class="fixed top-6 right-6 z-[100] flex flex-col gap-3 w-80 pointer-events-none">
-        <template x-for="n in notifications" :key="n.id">
-            <div x-show="n.show"
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="translate-x-full opacity-0 scale-90"
-                 x-transition:enter-end="translate-x-0 opacity-100 scale-100"
-                 x-transition:leave="transition ease-in duration-300"
-                 x-transition:leave-start="opacity-100 scale-100"
-                 x-transition:leave-end="opacity-0 scale-90"
-                 class="px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-4 pointer-events-auto border animate-spring"
-                 :class="{
-                    'toast-success': n.type === 'success',
-                    'toast-error': n.type === 'error',
-                    'toast-warning': n.type === 'warning',
-                    'glass text-blue-800 border-blue-200/50': n.type === 'info'
-                 }">
-                
-                {{-- Icon --}}
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-white/20 shadow-inner">
-                    <template x-if="n.type === 'success'"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></template>
-                    <template x-if="n.type === 'error'"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg></template>
-                    <template x-if="n.type === 'warning'"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></template>
-                </div>
+        });
 
-                <div class="flex-1">
-                    <p class="text-[10px] uppercase font-black tracking-widest opacity-60 mb-0.5" x-text="n.type"></p>
-                    <p class="text-sm font-bold leading-tight" x-text="n.message"></p>
-                </div>
+        function showSwalToast(data) {
+            const detail = Array.isArray(data) ? data[0] : data;
+            const type = detail.type || 'info';
+            const message = detail.message || '';
 
-                <button @click="close(n.id)" class="opacity-40 hover:opacity-100 transition shrink-0 p-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-        </template>
-    </div>
+            const iconMap = {
+                'success': 'success',
+                'error': 'error',
+                'warning': 'warning',
+                'info': 'info'
+            };
+
+            Toast.fire({
+                icon: iconMap[type] || 'info',
+                title: message,
+                background: document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#f8fafc' : '#1e293b',
+            });
+        }
+
+        // Listen for Livewire 'alert' and 'notify' events
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('alert', (data) => showSwalToast(data));
+            Livewire.on('notify', (data) => showSwalToast(data));
+        });
+
+        // Handle session flash messages on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            @if(session('success'))
+                showSwalToast({ type: 'success', message: '{{ session("success") }}' });
+            @endif
+            @if(session('error'))
+                showSwalToast({ type: 'error', message: '{{ session("error") }}' });
+            @endif
+            @if(session('warning'))
+                showSwalToast({ type: 'warning', message: '{{ session("warning") }}' });
+            @endif
+        });
+    </script>
 
     @livewireScripts
 </body>

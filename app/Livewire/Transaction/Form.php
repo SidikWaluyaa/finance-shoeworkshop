@@ -15,7 +15,7 @@ class Form extends Component
     use WithFileUploads;
 
     public ?int $transactionId = null;
-    public int $account_id = 0;
+    public ?int $account_id = null;
     public string $type = 'expense';
     public string $amount = '';
     public ?int $category_id = null;
@@ -34,7 +34,7 @@ class Form extends Component
     protected function rules(): array
     {
         return [
-            'account_id' => 'required|exists:accounts,id',
+            'account_id' => 'nullable|exists:accounts,id',
             'type' => 'required|in:income,expense',
             'amount' => 'required|numeric|min:0',
             'category_id' => 'nullable|exists:categories,id',
@@ -59,7 +59,7 @@ class Form extends Component
         $transaction = Transaction::findOrFail($id);
         $this->transactionId = $transaction->id;
         $this->account_id = $transaction->account_id;
-        $this->type = $transaction->type;
+        $this->type = $transaction->type ?? 'expense';
         $this->amount = $transaction->amount;
         $this->category_id = $transaction->category_id;
         $this->source_type = $transaction->source_type;

@@ -33,6 +33,56 @@ class TransactionTemplateExport implements WithHeadings, WithEvents, ShouldAutoS
             AfterSheet::class => function(AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
                 
+                // Add instruction row (row 2) with field requirements
+                $instructions = [
+                    'WAJIB - DD/MM/YYYY',
+                    'WAJIB',
+                    'Opsional (Masuk/Keluar)',
+                    'WAJIB - contoh: 100000 atau 100.000',
+                    'Opsional',
+                    'Opsional',
+                    'Opsional',
+                ];
+                $col = 'A';
+                foreach ($instructions as $hint) {
+                    $sheet->setCellValue($col . '2', $hint);
+                    $col++;
+                }
+                // Style instruction row (italic, gray, smaller)
+                $sheet->getStyle('A2:G2')->applyFromArray([
+                    'font' => [
+                        'italic' => true,
+                        'size' => 9,
+                        'color' => ['rgb' => '888888'],
+                    ],
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'FFF9E6'],
+                    ],
+                ]);
+
+                // Style header row with green for mandatory, gray for optional
+                $mandatoryCols = ['A1', 'B1', 'D1'];
+                $optionalCols = ['C1', 'E1', 'F1', 'G1'];
+                foreach ($mandatoryCols as $c) {
+                    $sheet->getStyle($c)->applyFromArray([
+                        'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+                        'fill' => [
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => ['rgb' => '22AF85'],
+                        ],
+                    ]);
+                }
+                foreach ($optionalCols as $c) {
+                    $sheet->getStyle($c)->applyFromArray([
+                        'font' => ['bold' => true, 'color' => ['rgb' => '333333']],
+                        'fill' => [
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => ['rgb' => 'E2E8F0'],
+                        ],
+                    ]);
+                }
+
                 // Get all accounts, categories, and locations
                 $accounts = Account::pluck('name')->toArray();
                 $categories = Category::pluck('name')->toArray();
@@ -41,8 +91,8 @@ class TransactionTemplateExport implements WithHeadings, WithEvents, ShouldAutoS
                 // Add fixed "Masuk/Keluar" options
                 $types = ['Masuk', 'Keluar'];
 
-                // Apply dynamic validation to rows 2-100 (for example)
-                for ($row = 2; $row <= 100; $row++) {
+                // Apply dynamic validation to rows 3-100 (row 2 is instruction)
+                for ($row = 3; $row <= 100; $row++) {
                     // Tanggal (Cell A)
                     $this->setDateValidation($sheet, 'A' . $row);
 
@@ -65,7 +115,8 @@ class TransactionTemplateExport implements WithHeadings, WithEvents, ShouldAutoS
     public function columnFormats(): array
     {
         return [
-            'A' => NumberFormat::FORMAT_TEXT, // Use Text to prevent Excel date mangling
+            'A' => NumberFormat::FORMAT_TEXT, // Text to prevent Excel date mangling
+            'D' => NumberFormat::FORMAT_TEXT, // Text to support "100.000" notation
         ];
     }
 

@@ -43,7 +43,9 @@
                             @endif
                         </div>
                         <p class="text-gray-900 dark:text-white font-bold">{{ $file ? $file->getClientOriginalName() : 'Klik atau tarik file ke sini' }}</p>
-                        <p class="text-gray-400 dark:text-slate-500 text-xs mt-1">Format: .xlsx, .xls, .csv (Mendukung DD/MM/YYYY)</p>
+                        <p class="text-gray-400 dark:text-slate-500 text-xs mt-1">Format: .xlsx, .xls, .csv</p>
+                        <p class="text-gray-400 dark:text-slate-500 text-xs mt-0.5">Wajib: <span class="text-emerald-500 font-bold">Tanggal, Deskripsi, Jumlah</span> • Jumlah bisa tulis 100.000</p>
+                        <p class="text-gray-400 dark:text-slate-500 text-xs mt-0.5">Opsional: Tipe, Akun, Kategori, Lokasi (bisa diisi nanti lewat Edit)</p>
                     </div>
                 </div>
 
