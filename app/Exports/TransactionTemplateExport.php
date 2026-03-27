@@ -65,7 +65,7 @@ class TransactionTemplateExport implements WithHeadings, WithEvents, ShouldAutoS
     public function columnFormats(): array
     {
         return [
-            'A' => 'yyyy-mm-dd',
+            'A' => NumberFormat::FORMAT_TEXT, // Use Text to prevent Excel date mangling
         ];
     }
 
@@ -73,17 +73,17 @@ class TransactionTemplateExport implements WithHeadings, WithEvents, ShouldAutoS
     {
         $validation = $sheet->getDataValidation($cell);
         $validation->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_DATE);
-        $validation->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP);
+        $validation->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_INFORMATION); // Allow skipping error
         $validation->setAllowBlank(true);
         $validation->setShowInputMessage(true);
         $validation->setShowErrorMessage(true);
         $validation->setOperator(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::OPERATOR_BETWEEN);
         $validation->setFormula1('1900-01-01');
         $validation->setFormula2('2099-12-31');
-        $validation->setErrorTitle('Input Error');
-        $validation->setError('Format tanggal tidak valid (gunakan YYYY-MM-DD).');
+        $validation->setErrorTitle('Peringatan Format');
+        $validation->setError('Sangat disarankan menggunakan format YYYY-MM-DD (contoh: 2025-12-31) untuk akurasi data.');
         $validation->setPromptTitle('Input Tanggal');
-        $validation->setPrompt('Masukkan tanggal (YYYY-MM-DD) atau Double-Klik untuk kalender (Google Sheets).');
+        $validation->setPrompt('Format: YYYY-MM-DD (Contoh: 2026-03-27) atau DD/MM/YYYY.');
     }
 
     private function setDropdown($sheet, $cell, array $options): void

@@ -23,10 +23,23 @@ class TransactionsImport implements ToModel, WithHeadingRow, WithValidation, Ski
         $category = Category::where('name', $row['kategori'])->first();
         $location = isset($row['lokasi']) ? ExpenseLocation::where('name', $row['lokasi'])->first() : null;
 
-        // Date parsing: check if numeric (Excel serial) or string
-        $date = is_numeric($row['tanggal']) 
-            ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tanggal'])
-            : Carbon::parse($row['tanggal']);
+        // Date parsing: handle Excel serial, DD/MM/YYYY, or YYYY-MM-DD
+        $rawDate = $row['tanggal'];
+        if (is_numeric($rawDate)) {
+            $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($rawDate);
+        } else {
+            // Remove any extra whitespace
+            $rawDate = trim($rawDate);
+            
+            // Try to detect DD/MM/YYYY vs YYYY-MM-DD
+            if (preg_match('/^\d{1,2}\/\d{1,2}\/\d{4}$/', $rawDate)) {
+                $date = Carbon::createFromFormat('d/m/Y', $rawDate);
+            } elseif (preg_match('/^\d{1,2}-\d{1,2}-\d{4}$/', $rawDate)) {
+                $date = Carbon::createFromFormat('d-m-Y', $rawDate);
+            } else {
+                $date = Carbon::parse($rawDate);
+            }
+        }
 
         return new Transaction([
             'account_id' => $account?->id,

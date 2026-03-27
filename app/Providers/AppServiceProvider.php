@@ -22,7 +22,13 @@ class AppServiceProvider extends ServiceProvider
     {
         \Illuminate\Support\Facades\Schema::defaultStringLength(191);
 
-        if (str_contains(config('app.url'), 'https://')) {
+        // Fix Livewire asset loading in sub-directories (Local Laragon/XAMPP)
+        $baseUrl = config('app.url');
+        if (str_contains($_SERVER['REQUEST_URI'] ?? '', '/FinanceSW/public')) {
+             \Illuminate\Support\Facades\Config::set('livewire.asset_url', '/FinanceSW/public');
+        }
+
+        if (str_contains($baseUrl, 'https://')) {
             URL::forceScheme('https');
         }
     }
