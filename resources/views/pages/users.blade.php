@@ -1,4 +1,3 @@
-<x-app-layout>
-    <x-slot name="title">Manajemen Pengguna</x-slot>
+<x-layouts.app title="Manajemen Pengguna">
     <livewire:user.index />
-</x-app-layout>
+</x-layouts.app>
