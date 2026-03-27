@@ -1,9 +1,9 @@
 <div x-data="{ showHistory: @entangle('showHistory') }" class="relative">
     {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
         <div>
-            <h2 class="text-2xl font-bold text-[var(--color-dark)]">Akun (Sumber Dana)</h2>
-            <p class="text-sm text-[var(--color-secondary)] mt-1">Kelola akun bank, kas, dan e-wallet</p>
+            <h2 class="page-header">Akun (Sumber Dana)</h2>
+            <p class="page-description">Kelola saldo bank, kas fisik, dan e-wallet secara terpusat</p>
         </div>
         <button wire:click="$dispatch('createAccount')" class="btn btn-primary">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -25,7 +25,7 @@
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center
-                            {{ $acc->type === 'bank' ? 'bg-blue-50' : ($acc->type === 'cash' ? 'bg-green-50' : 'bg-purple-50') }}">
+                            {{ $acc->type === 'bank' ? 'bg-blue-50 dark:bg-blue-500/10' : ($acc->type === 'cash' ? 'bg-green-50 dark:bg-emerald-500/10' : 'bg-purple-50 dark:bg-purple-500/10') }}">
                             @if($acc->type === 'bank')
                                 <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                             @elseif($acc->type === 'cash')
@@ -57,7 +57,7 @@
             </div>
         @empty
             <div class="col-span-3 card text-center py-12">
-                <div class="w-16 h-16 rounded-3xl bg-slate-50 flex items-center justify-center mx-auto mb-3">
+                <div class="w-16 h-16 rounded-3xl bg-slate-50 dark:bg-[var(--color-dm-surface2)] flex items-center justify-center mx-auto mb-3">
                     <span class="text-2xl">🏦</span>
                 </div>
                 <p class="text-sm font-bold text-[var(--color-secondary)] uppercase tracking-widest">Belum ada akun.</p>
@@ -90,16 +90,16 @@
                  x-transition:leave-end="translate-x-full"
                  class="w-screen max-w-md">
                 
-                <div class="h-full flex flex-col bg-white shadow-2xl relative">
+                <div class="h-full flex flex-col bg-white dark:bg-[var(--color-dm-surface)] shadow-2xl relative">
                     {{-- Drawer Header --}}
-                    <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                    <div class="px-6 py-5 border-b border-slate-100 dark:border-[var(--color-dm-border)] flex items-center justify-between bg-white dark:bg-[var(--color-dm-surface)] sticky top-0 z-10">
                         <div>
-                            <h3 class="text-lg font-black text-slate-900 leading-tight">
+                            <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight">
                                 {{ $selectedAccount?->name ?? 'Detail Akun' }}
                             </h3>
                             <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-0.5">Riwayat Transaksi</p>
                         </div>
-                        <button @click="showHistory = false" class="p-2 rounded-xl hover:bg-slate-50 transition-colors text-slate-400 group">
+                        <button @click="showHistory = false" class="p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-[var(--color-dm-surface2)] transition-colors text-slate-400 group">
                             <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -120,7 +120,7 @@
                                 {{-- Transaction List --}}
                                 <div class="space-y-3">
                                     @forelse($historyTransactions as $tx)
-                                        <div class="p-4 rounded-2xl border border-slate-50 bg-slate-50/50 hover:bg-white hover:shadow-md hover:border-slate-100 transition-all duration-200 group">
+                                        <div class="p-4 rounded-2xl border border-slate-50 dark:border-[var(--color-dm-border)] bg-slate-50/50 dark:bg-[var(--color-dm-surface2)]/30 hover:bg-white dark:hover:bg-[var(--color-dm-surface2)]/50 hover:shadow-md hover:border-slate-100 transition-all duration-200 group">
                                             <div class="flex items-center justify-between gap-4">
                                                 <div class="flex items-center gap-3 min-w-0">
                                                     <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 
@@ -132,7 +132,7 @@
                                                         @endif
                                                     </div>
                                                     <div class="min-w-0">
-                                                        <p class="text-xs font-black text-slate-800 truncate mb-0.5">
+                                                        <p class="text-xs font-black text-slate-800 dark:text-slate-200 truncate mb-0.5">
                                                             {{ $tx->description ?: ($tx->category?->name ?? 'Transaksi') }}
                                                         </p>
                                                         <p class="text-[10px] font-bold text-slate-400">

@@ -1,9 +1,9 @@
 <div>
     {{-- Page Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
         <div>
-            <h2 class="text-2xl font-bold text-[var(--color-dark)]">Transaksi</h2>
-            <p class="text-sm text-[var(--color-secondary)] mt-1">Kelola semua transaksi keuangan</p>
+            <h2 class="page-header">Transaksi</h2>
+            <p class="page-description">Kelola semua catatan keuangan arus kas masuk dan keluar</p>
         </div>
         @can('create transactions')
         <button wire:click="$dispatch('createTransaction')" class="btn btn-primary">
@@ -55,14 +55,14 @@
                         <tr wire:key="tx-{{ $tx->id }}">
                             <td class="whitespace-nowrap">{{ $tx->date->format('d/m/Y') }}</td>
                             <td>
-                                <div class="max-w-xs truncate font-medium text-gray-900">{{ $tx->description ?: '-' }}</div>
+                                <div class="max-w-xs truncate font-medium text-[var(--color-dark)]">{{ $tx->description ?: '-' }}</div>
                                 <div class="text-[10px] text-[var(--color-secondary)] uppercase font-semibold">{{ $tx->account?->name }}</div>
                             </td>
                             <td class="whitespace-nowrap">
                                 @if($tx->location)
                                     <div class="flex items-center gap-1.5">
                                         <span class="text-primary">{{ $tx->location->icon ?: '📍' }}</span>
-                                        <span class="text-gray-700 font-medium">{{ $tx->location->name }}</span>
+                                        <span class="text-[var(--color-dark)] font-medium">{{ $tx->location->name }}</span>
                                     </div>
                                 @else
                                     <span class="text-gray-300">-</span>
@@ -82,7 +82,7 @@
                             </td>
                         <td class="text-center">
                             @if($tx->evidence_path)
-                                <a href="{{ asset('storage/' . $tx->evidence_path) }}" target="_blank" class="inline-block w-8 h-8 rounded-lg overflow-hidden border border-gray-100 hover:border-[var(--color-primary)] transition">
+                                <a href="{{ asset('storage/' . $tx->evidence_path) }}" target="_blank" class="inline-block w-8 h-8 rounded-lg overflow-hidden border border-[var(--color-border)] hover:border-[var(--color-primary)] transition">
                                     <img src="{{ asset('storage/' . $tx->evidence_path) }}" class="w-full h-full object-cover">
                                 </a>
                             @else
@@ -110,7 +110,7 @@
                     <tr>
                         <td colspan="9" class="text-center py-16">
                             <div class="flex flex-col items-center justify-center space-y-3 prose-sm mx-auto">
-                                <div class="w-16 h-16 rounded-3xl bg-slate-50 flex items-center justify-center">
+                                <div class="w-16 h-16 rounded-3xl bg-slate-50 dark:bg-[var(--color-dm-surface2)]/50 flex items-center justify-center">
                                     <span class="text-2xl">📝</span>
                                 </div>
                                 <div class="text-[var(--color-secondary)]">

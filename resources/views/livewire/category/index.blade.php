@@ -1,8 +1,8 @@
 <div>
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
         <div>
-            <h2 class="text-2xl font-bold text-[var(--color-dark)]">Kategori</h2>
-            <p class="text-sm text-[var(--color-secondary)] mt-1">Kelola kategori pemasukan dan pengeluaran</p>
+            <h2 class="page-header">Kategori</h2>
+            <p class="page-description">Kelola kategori pemasukan dan pengeluaran secara sistematis</p>
         </div>
         <button wire:click="$dispatch('createCategory')" class="btn btn-primary">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>

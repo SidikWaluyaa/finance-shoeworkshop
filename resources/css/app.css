@@ -23,6 +23,7 @@
     --color-dm-border: #334155;
     --color-dm-text: #f8fafc;
     --color-dm-muted: #94a3b8;
+    --color-header: #000000;
   }
 
   .dark {
@@ -32,6 +33,7 @@
     --color-bg: var(--color-dm-bg);
     --color-surface: var(--color-dm-surface);
     --color-border: var(--color-dm-border);
+    --color-header: #ffffff;
   }
 
   body {
@@ -43,6 +45,14 @@
   /* UI Components */
   .card {
     @apply bg-white dark:bg-[var(--color-dm-surface)] rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-[var(--color-dm-border)] transition-all duration-300;
+  }
+
+  .page-header {
+    @apply text-3xl font-black text-[var(--color-header)] tracking-tight;
+  }
+
+  .page-description {
+    @apply text-sm text-[var(--color-secondary)] dark:text-slate-400 mt-1;
   }
   
   .glass {

@@ -1,14 +1,14 @@
 <div class="space-y-6">
     <!-- Header Area -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-3xl font-black text-slate-800 dark:text-white flex items-center gap-3">
-                <div class="p-3 rounded-2xl bg-rose-500/10 text-rose-500 shadow-inner">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            <h1 class="page-header flex items-center gap-3">
+                <div class="p-2.5 rounded-2xl bg-rose-500/10 text-rose-500 shadow-inner">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 </div>
                 Tempat Sampah (Recycle Bin)
             </h1>
-            <p class="text-slate-500 dark:text-slate-400 mt-1 font-medium italic">Data yang dihapus (Soft Delete) tersimpan di sini sebelum dibersihkan permanen.</p>
+            <p class="page-description">Data terhapus sementara disimpan di sini sebelum dibersihkan permanen.</p>
         </div>
         
         <div class="flex items-center gap-2 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-x-auto max-w-full">

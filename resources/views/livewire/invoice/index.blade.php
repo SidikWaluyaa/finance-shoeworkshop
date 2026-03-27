@@ -1,9 +1,9 @@
 <div>
     {{-- Page Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
         <div>
-            <h2 class="text-2xl font-bold text-[var(--color-dark)]">Piutang (Invoice)</h2>
-            <p class="text-sm text-[var(--color-secondary)] mt-1">Kelola piutang dan tagihan klien</p>
+            <h2 class="page-header">Piutang (Invoice)</h2>
+            <p class="page-description">Kelola piutang dan tagihan klien untuk memantau arus kas masuk</p>
         </div>
         <button wire:click="$dispatch('createInvoice')" class="btn btn-primary">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -44,7 +44,7 @@
                             <td class="font-medium">{{ $inv->client_name }}</td>
                             <td class="text-right whitespace-nowrap">
                                 <span class="font-semibold block">Rp {{ number_format($inv->total, 0, ',', '.') }}</span>
-                                <div class="w-full bg-gray-100 rounded-full h-1 mt-1 overflow-hidden">
+                                <div class="w-full bg-gray-100 dark:bg-[var(--color-dm-surface2)] rounded-full h-1 mt-1 overflow-hidden">
                                     <div class="bg-[var(--color-primary)] h-1 transition-all duration-500" style="width: {{ ($inv->paid_amount / $inv->total) * 100 }}%"></div>
                                 </div>
                                 <span class="text-[10px] text-[var(--color-secondary)] uppercase">Dibayar: Rp {{ number_format($inv->paid_amount, 0, ',', '.') }}</span>
@@ -86,7 +86,7 @@
                     <tr>
                         <td colspan="8" class="text-center py-16">
                             <div class="flex flex-col items-center justify-center space-y-3">
-                                <div class="w-20 h-20 rounded-[2.5rem] bg-emerald-50 flex items-center justify-center">
+                                <div class="w-20 h-20 rounded-[2.5rem] bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
                                     <span class="text-3xl">🎉</span>
                                 </div>
                                 <div>

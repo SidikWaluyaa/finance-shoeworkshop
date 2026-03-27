@@ -1,9 +1,9 @@
 <div>
     {{-- Page Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
         <div>
-            <h2 class="text-2xl font-bold text-[var(--color-dark)]">Utang (Payables)</h2>
-            <p class="text-sm text-[var(--color-secondary)] mt-1">Kelola utang kepada supplier</p>
+            <h2 class="page-header">Utang (Payables)</h2>
+            <p class="page-description">Kelola utang kepada supplier untuk menjaga liabilitas perusahaan</p>
         </div>
         <button wire:click="$dispatch('createPayable')" class="btn btn-primary">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -59,7 +59,7 @@
                             </td>
                             <td class="text-right whitespace-nowrap">
                                 <span class="font-semibold block text-red-500">Rp {{ number_format($pay->total, 0, ',', '.') }}</span>
-                                <div class="w-full bg-gray-100 rounded-full h-1 mt-1 overflow-hidden">
+                                <div class="w-full bg-gray-100 dark:bg-[var(--color-dm-surface2)] rounded-full h-1 mt-1 overflow-hidden">
                                     <div class="bg-red-500 h-1 transition-all duration-500" style="width: {{ ($pay->paid_amount / $pay->total) * 100 }}%"></div>
                                 </div>
                                 <span class="text-[10px] text-[var(--color-secondary)] uppercase">Terbayar: Rp {{ number_format($pay->paid_amount, 0, ',', '.') }}</span>
@@ -98,7 +98,7 @@
                         <tr>
                             <td colspan="5" class="text-center py-16">
                                 <div class="flex flex-col items-center justify-center space-y-3">
-                                    <div class="w-16 h-16 rounded-3xl bg-rose-50 flex items-center justify-center">
+                                    <div class="w-16 h-16 rounded-3xl bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center">
                                         <span class="text-2xl">🙌</span>
                                     </div>
                                     <div>
@@ -126,7 +126,7 @@
                 </button>
             </div>
 
-            <div class="bg-yellow-50 rounded-xl p-4 mb-4">
+            <div class="bg-yellow-50 dark:bg-amber-500/10 rounded-xl p-4 mb-4">
                 <p class="text-xs text-[var(--color-accent-dark)]">
                     ⚠️ Pembayaran akan membuat transaksi <strong>pengeluaran</strong> otomatis.
                 </p>
