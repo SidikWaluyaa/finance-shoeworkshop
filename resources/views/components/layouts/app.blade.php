@@ -20,9 +20,6 @@
 
     {{-- ApexCharts --}}
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.0/dist/apexcharts.min.js" defer></script>
-
-    {{-- Alpine.js Fallback (Ensures toggles work even if Livewire assets 404) --}}
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 <body
     class="min-h-screen transition-colors duration-300"
