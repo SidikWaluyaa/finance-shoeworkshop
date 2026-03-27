@@ -42,22 +42,22 @@
                 <span class="w-2 h-2 rounded-full bg-[#22AF85]"></span>
                 Transaksi Terhapus
             </h2>
-            <div class="glass overflow-hidden shadow-sm">
+            <div class="glass overflow-hidden shadow-sm !bg-white/50 dark:!bg-slate-900/50">
                 <table class="w-full text-left">
                     <thead>
-                        <tr class="border-b border-slate-100 bg-slate-50/50">
-                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Tanggal / Deskripsi</th>
-                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Jumlah</th>
-                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400">Dihapus</th>
-                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right">Aksi</th>
+                        <tr class="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500">
+                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider">Tanggal / Deskripsi</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider">Jumlah</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider">Dihapus</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                         @foreach($transactions as $t)
-                        <tr class="hover:bg-slate-50/50 transition-colors group">
+                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors group">
                             <td class="px-6 py-4">
-                                <div class="font-bold text-slate-700">{{ $t->date->format('d/m/Y') }}</div>
-                                <div class="text-xs text-slate-400 truncate max-w-xs">{{ $t->description }}</div>
+                                <div class="font-bold text-slate-700 dark:text-white">{{ $t->date->format('d/m/Y') }}</div>
+                                <div class="text-xs text-slate-400 dark:text-slate-500 truncate max-w-xs">{{ $t->description }}</div>
                             </td>
                             <td class="px-6 py-4 font-black">
                                 <span class="{{ $t->type === 'income' ? 'text-[#22AF85]' : 'text-rose-500' }}">
@@ -95,29 +95,29 @@
                             <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                         @foreach($accounts as $acc)
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="px-6 py-4 font-bold text-slate-700">{{ $acc->name }}</td>
-                            <td class="px-6 py-4"><span class="badge" style="background: #E0E7FF; color: #4338CA;">AKUN</span></td>
+                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-slate-700 dark:text-white">{{ $acc->name }}</td>
+                            <td class="px-6 py-4"><span class="badge badge-info">AKUN</span></td>
                             <td class="px-6 py-4 text-right space-x-1">
                                 <button wire:click="restore('account', {{ $acc->id }})" class="p-2 rounded-xl text-blue-500 hover:bg-blue-50 transition-all"><svg class="w-5 h-5 shadow-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
                             </td>
                         </tr>
                         @endforeach
                         @foreach($categories as $cat)
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="px-6 py-4 font-bold text-slate-700">{{ $cat->name }}</td>
-                            <td class="px-6 py-4"><span class="badge" style="background: #D1FAE5; color: #059669;">KATEGORI</span></td>
+                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-slate-700 dark:text-white">{{ $cat->name }}</td>
+                            <td class="px-6 py-4"><span class="badge badge-success">KATEGORI</span></td>
                             <td class="px-6 py-4 text-right space-x-1">
                                 <button wire:click="restore('category', {{ $cat->id }})" class="p-2 rounded-xl text-blue-500 hover:bg-blue-50 transition-all"><svg class="w-5 h-5 shadow-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
                             </td>
                         </tr>
                         @endforeach
                         @foreach($locations as $loc)
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="px-6 py-4 font-bold text-slate-700">{{ $loc->name }}</td>
-                            <td class="px-6 py-4"><span class="badge" style="background: #FEF3C7; color: #D97706;">LOKASI</span></td>
+                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-slate-700 dark:text-white">{{ $loc->name }}</td>
+                            <td class="px-6 py-4"><span class="badge badge-warning">LOKASI</span></td>
                             <td class="px-6 py-4 text-right space-x-1">
                                 <button wire:click="restore('location', {{ $loc->id }})" class="p-2 rounded-xl text-blue-500 hover:bg-blue-50 transition-all"><svg class="w-5 h-5 shadow-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
                             </td>
@@ -145,30 +145,30 @@
                             <th class="px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                         @foreach($invoices as $i)
-                        <tr class="hover:bg-slate-50/50 transition-colors">
+                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                             <td class="px-6 py-4 italic">
-                                <div class="font-bold text-slate-700">{{ $i->client_name }}</div>
-                                <div class="text-[9px] font-black text-blue-500 uppercase tracking-tighter">PIUTANG (INVOICE)</div>
+                                <div class="font-bold text-slate-700 dark:text-white">{{ $i->client_name }}</div>
+                                <div class="text-[9px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-tighter">PIUTANG (INVOICE)</div>
                             </td>
-                            <td class="px-6 py-4 font-black text-slate-700">Rp {{ number_format($i->total, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 font-black text-slate-700 dark:text-slate-300">Rp {{ number_format($i->total, 0, ',', '.') }}</td>
                             <td class="px-6 py-4 text-right space-x-1">
-                                <button wire:click="restore('invoice', {{ $i->id }})" class="p-2 rounded-xl text-blue-500 hover:bg-blue-50 shadow-sm transition-all"><svg class="w-5 h-5 shadow-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
-                                <button wire:click="forceDelete('invoice', {{ $i->id }})" wire:confirm="Hapus permanen invoice ini?" class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 shadow-sm transition-all"><svg class="w-5 h-5 shadow-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                <button wire:click="restore('invoice', {{ $i->id }})" class="p-2 rounded-xl text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 shadow-sm transition-all"><svg class="w-5 h-5 shadow-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
+                                <button wire:click="forceDelete('invoice', {{ $i->id }})" wire:confirm="Hapus permanen invoice ini?" class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 shadow-sm transition-all"><svg class="w-5 h-5 shadow-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                             </td>
                         </tr>
                         @endforeach
                         @foreach($payables as $p)
-                        <tr class="hover:bg-slate-50/50 transition-colors">
+                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                             <td class="px-6 py-4 italic">
-                                <div class="font-bold text-slate-700">{{ $p->supplier_name }}</div>
-                                <div class="text-[9px] font-black text-rose-500 uppercase tracking-tighter">HUTANG SUPPLIER</div>
+                                <div class="font-bold text-slate-700 dark:text-white">{{ $p->supplier_name }}</div>
+                                <div class="text-[9px] font-black text-rose-500 dark:text-rose-400 uppercase tracking-tighter">HUTANG SUPPLIER</div>
                             </td>
-                            <td class="px-6 py-4 font-black text-slate-700">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 font-black text-slate-700 dark:text-slate-300">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
                             <td class="px-6 py-4 text-right space-x-1">
-                                <button wire:click="restore('payable', {{ $p->id }})" class="p-2 rounded-xl text-blue-500 hover:bg-blue-50 shadow-sm transition-all"><svg class="w-5 h-5 shadow-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
-                                <button wire:click="forceDelete('payable', {{ $p->id }})" wire:confirm="Hapus permanen data utang ini?" class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 shadow-sm transition-all"><svg class="w-5 h-5 shadow-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                <button wire:click="restore('payable', {{ $p->id }})" class="p-2 rounded-xl text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 shadow-sm transition-all"><svg class="w-5 h-5 shadow-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
+                                <button wire:click="forceDelete('payable', {{ $p->id }})" wire:confirm="Hapus permanen data utang ini?" class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 shadow-sm transition-all"><svg class="w-5 h-5 shadow-inner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                             </td>
                         </tr>
                         @endforeach
