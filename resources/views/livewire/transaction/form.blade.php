@@ -3,11 +3,11 @@
     <div class="modal-backdrop" x-data x-transition>
         <div class="modal-content !max-w-4xl" @click.outside="$wire.closeModal()">
             <div class="flex items-center justify-between mb-4 sm:mb-6">
-                <h3 class="text-xl font-black text-[var(--color-dark)] flex items-center gap-2">
+                <h3 class="text-xl font-black text-[var(--color-dark)] dark:text-white flex items-center gap-2">
                     <svg class="w-6 h-6 text-[#22AF85]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                     {{ $transactionId ? 'Edit Transaksi' : 'Tambah Transaksi' }}
                 </h3>
-                <button wire:click="closeModal" class="p-2 rounded-xl hover:bg-rose-50 hover:text-rose-500 transition-colors text-slate-400">
+                <button wire:click="closeModal" class="p-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500 transition-colors text-slate-400">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
@@ -79,13 +79,13 @@
                     @if($type === 'expense')
                     <div class="sm:col-span-1">
                         <label class="form-label font-semibold text-[#22AF85]">📍 Lokasi Pengeluaran (Opsional)</label>
-                        <select wire:model="expense_location_id" class="form-select border-[#22AF85]/20 focus:border-[#22AF85] focus:ring-[#22AF85]/20">
+                        <select wire:model="expense_location_id" class="form-select border-[#22AF85]/20 focus:border-[#22AF85] focus:ring-[#22AF85]/20 dark:bg-slate-800">
                             <option value="">Pilih Lokasi / Vendor</option>
                             @foreach($locations as $loc)
                                 <option value="{{ $loc->id }}">{{ $loc->icon }} {{ $loc->name }}</option>
                             @endforeach
                         </select>
-                        <p class="text-[9px] text-slate-400 mt-1 uppercase tracking-wider font-bold">Lacak tujuan pengeluaran</p>
+                        <p class="text-[9px] text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-wider font-bold">Lacak tujuan pengeluaran</p>
                     </div>
                     <div class="sm:col-span-1">
                     @else

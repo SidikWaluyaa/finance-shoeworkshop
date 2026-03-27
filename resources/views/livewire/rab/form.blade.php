@@ -3,10 +3,10 @@
     <div class="modal-backdrop" x-data x-transition>
         <div class="modal-content" @click.outside="$wire.closeModal()">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-[var(--color-dark)]">
+                <h3 class="text-lg font-bold text-[var(--color-dark)] dark:text-white">
                     {{ $rabId ? 'Edit RAB' : 'Tambah RAB' }}
                 </h3>
-                <button wire:click="closeModal" class="p-1 rounded-lg hover:bg-gray-100 transition">
+                <button wire:click="closeModal" class="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
@@ -35,7 +35,7 @@
 
                 <div>
                     <label class="form-label font-bold text-[var(--color-primary)]">Total Anggaran (Otomatis)</label>
-                    <div class="form-input bg-gray-50 font-bold">
+                    <div class="form-input bg-gray-50 dark:bg-slate-900/50 font-bold border-dashed border-2 border-emerald-500/20">
                         Rp {{ number_format((float)$total_budget, 0, ',', '.') }}
                     </div>
                 </div>
@@ -45,9 +45,9 @@
                     <textarea wire:model="description" class="form-input" rows="1" placeholder="Keterangan singkat..."></textarea>
                 </div>
 
-                <div class="border-t pt-4">
+                <div class="border-t dark:border-slate-700 pt-4">
                     <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-sm font-bold text-[var(--color-dark)]">Item Anggaran</h4>
+                        <h4 class="text-sm font-bold text-[var(--color-dark)] dark:text-white">Item Anggaran</h4>
                         <button type="button" wire:click="addItem" class="btn btn-secondary btn-sm">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                             Tambah Baris
