@@ -124,11 +124,17 @@
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-[9px] text-slate-400 font-black uppercase tracking-widest">{{ $rab->usage_percent }}% Dialokasikan</span>
-                            @if($rab->usage_percent > 90)
-                                <span class="text-[9px] text-rose-500 font-black animate-pulse inline-flex items-center gap-1 uppercase tracking-tighter">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                                    Limit Terlampaui!
-                                </span>
+                            @if($rab->usage_percent >= 90)
+                            <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg font-black uppercase tracking-tighter text-[9px]
+                                {{ $rab->usage_percent > 100 ? 'bg-rose-50 text-rose-600 animate-pulse' : ($rab->usage_percent == 100 ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600') }}">
+                                @if($rab->usage_percent > 100)
+                                    <span>⚠️ Melebihi Budget</span>
+                                @elseif($rab->usage_percent == 100)
+                                    <span>✓ Sudah Terbayar</span>
+                                @else
+                                    <span>⚡ Hampir Limit</span>
+                                @endif
+                            </div>
                             @endif
                         </div>
                     </div>

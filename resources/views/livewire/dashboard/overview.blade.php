@@ -186,6 +186,400 @@
         @endforeach
     </div>
 
+    {{-- ===== 📅 PULSE HARI INI ===== --}}
+    <div class="mb-6">
+        {{-- Section Header --}}
+        <div class="flex items-center gap-3 mb-4">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center"
+                     style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent));">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black tracking-tight leading-none" :class="dark ? 'text-[var(--color-dm-text)]' : 'text-slate-900'">
+                        Pulse Hari Ini
+                    </h3>
+                    <p class="text-[10px] font-bold mt-0.5" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">
+                        {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider"
+                 :class="dark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50 text-emerald-600'">
+                <span class="relative flex h-1.5 w-1.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
+                Real-time
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+            {{-- 🧾 INVOICE HARI INI (col-span-6) --}}
+            <div class="lg:col-span-6 rounded-2xl border overflow-hidden shadow-sm transition-colors"
+                 :class="dark ? 'bg-[var(--color-dm-surface)] border-[var(--color-dm-border)]' : 'bg-white border-[var(--color-border)]'">
+                {{-- Top gradient accent --}}
+                <div class="h-1" style="background: linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa);"></div>
+
+                <div class="p-5">
+                    {{-- Header --}}
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-violet-50 text-violet-600 transition-all duration-300 hover:bg-violet-500 hover:text-white"
+                                 :class="dark ? 'bg-violet-500/10 text-violet-400' : ''">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-black uppercase tracking-widest" :class="dark ? 'text-[var(--color-dm-text)]' : 'text-slate-800'">Invoice Hari Ini</h4>
+                                <p class="text-[10px] font-semibold mt-0.5" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">Baru & Jatuh Tempo</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            @if(($todayInvoices['count_overdue'] ?? 0) > 0)
+                            <span class="px-2 py-1 rounded-lg text-[10px] font-black bg-rose-50 text-rose-600 animate-pulse"
+                                  :class="dark ? 'bg-rose-500/10 text-rose-400' : ''">
+                                {{ $todayInvoices['count_overdue'] }} Overdue
+                            </span>
+                            @endif
+                            <a href="{{ route('invoices') }}" class="w-8 h-8 rounded-xl flex items-center justify-center transition-all border"
+                               :class="dark ? 'bg-[var(--color-dm-surface2)] border-[var(--color-dm-border)] text-[var(--color-dm-muted)] hover:text-violet-400' : 'bg-slate-50 border-slate-100 text-slate-400 hover:text-violet-600 hover:bg-violet-50'">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    {{-- Stats Row --}}
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div class="rounded-xl p-3 text-center transition border"
+                             :class="dark ? 'bg-[var(--color-dm-surface2)] border-[var(--color-dm-border)]' : 'bg-slate-50 border-slate-100'">
+                            <p class="text-lg font-black" :class="dark ? 'text-[var(--color-dm-text)]' : 'text-slate-900'">{{ $todayInvoices['count_created'] ?? 0 }}</p>
+                            <p class="text-[9px] font-bold uppercase tracking-widest mt-0.5" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">Baru</p>
+                        </div>
+                        <div class="rounded-xl p-3 text-center transition border"
+                             :class="dark ? 'bg-[var(--color-dm-surface2)] border-[var(--color-dm-border)]' : 'bg-amber-50/60 border-amber-100'">
+                            <p class="text-lg font-black" :class="dark ? 'text-amber-400' : 'text-amber-600'">{{ $todayInvoices['count_due'] ?? 0 }}</p>
+                            <p class="text-[9px] font-bold uppercase tracking-widest mt-0.5" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">Jatuh Tempo</p>
+                        </div>
+                        <div class="rounded-xl p-3 text-center transition border"
+                             :class="dark ? 'bg-[var(--color-dm-surface2)] border-[var(--color-dm-border)]' : 'bg-rose-50/60 border-rose-100'">
+                            <p class="text-lg font-black" :class="dark ? 'text-rose-400' : 'text-rose-600'">{{ $todayInvoices['count_overdue'] ?? 0 }}</p>
+                            <p class="text-[9px] font-bold uppercase tracking-widest mt-0.5" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">Overdue</p>
+                        </div>
+                    </div>
+
+                    {{-- Invoice List --}}
+                    <div class="space-y-2">
+                        @php
+                            $allInvoicesToday = collect($todayInvoices['created_today'] ?? [])->merge($todayInvoices['due_today'] ?? [])->unique('id')->take(3);
+                        @endphp
+                        @forelse($allInvoicesToday as $inv)
+                        <div class="flex items-center justify-between p-2.5 rounded-xl border transition-all hover:shadow-sm group"
+                             :class="dark ? 'bg-[var(--color-dm-surface2)] border-[var(--color-dm-border)] hover:border-violet-500/30' : 'bg-white border-slate-100 hover:border-violet-200'">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0
+                                    {{ $inv->payment_status === 'paid' ? 'bg-emerald-50 text-emerald-600' : ($inv->payment_status === 'partial' ? 'bg-amber-50 text-amber-600' : ($inv->isOverdue() ? 'bg-rose-50 text-rose-600' : 'bg-slate-50 text-slate-500')) }}"
+                                    :class="dark ? 'opacity-90' : ''">
+                                    {{ $inv->payment_status === 'paid' ? '✓' : ($inv->payment_status === 'partial' ? '◐' : ($inv->isOverdue() ? '!' : '○')) }}
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-[11px] font-bold truncate" :class="dark ? 'text-[var(--color-dm-text)]' : 'text-slate-700'">{{ $inv->client_name }}</p>
+                                    <p class="text-[9px] font-semibold" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">
+                                        Due: {{ $inv->due_date->format('d M') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <p class="text-[11px] font-black" :class="dark ? 'text-[var(--color-dm-text)]' : 'text-slate-800'">{{ $this->formatCurrencyShort($inv->total) }}</p>
+                                <span class="text-[8px] font-black uppercase px-1.5 py-0.5 rounded
+                                    {{ $inv->payment_status === 'paid' ? 'bg-emerald-50 text-emerald-700' : ($inv->payment_status === 'partial' ? 'bg-amber-50 text-amber-700' : ($inv->isOverdue() ? 'bg-rose-50 text-rose-700' : 'bg-slate-50 text-slate-500')) }}">
+                                    {{ $inv->payment_status === 'paid' ? 'LUNAS' : ($inv->payment_status === 'partial' ? 'CICILAN' : ($inv->isOverdue() ? 'TELAT' : 'BELUM')) }}
+                                </span>
+                            </div>
+                        </div>
+                        @empty
+                        <div class="text-center py-6 rounded-xl border"
+                             :class="dark ? 'bg-[var(--color-dm-surface2)] border-[var(--color-dm-border)]' : 'bg-slate-50/50 border-slate-100'">
+                            <div class="w-10 h-10 rounded-2xl mx-auto flex items-center justify-center mb-2"
+                                 :class="dark ? 'bg-[var(--color-dm-surface)]' : 'bg-white shadow-sm'">
+                                <span class="text-lg opacity-40">🧾</span>
+                            </div>
+                            <p class="text-[10px] font-black uppercase tracking-widest" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">Tidak ada invoice hari ini</p>
+                        </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+
+            {{-- 💰 UANG MASUK HARI INI (col-span-3) --}}
+            <div class="lg:col-span-3 rounded-2xl border overflow-hidden shadow-sm transition-all group"
+                 :class="dark ? 'bg-[var(--color-dm-surface)] border-[var(--color-dm-border)]' : 'bg-white border-[var(--color-border)]'">
+                <div class="h-1" style="background: linear-gradient(90deg, #059669, #10b981, #34d399);"></div>
+
+                <div class="p-5 flex flex-col h-[calc(100%-4px)]">
+                    {{-- Header --}}
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600 transition-all duration-300 group-hover:bg-emerald-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-emerald-200"
+                             :class="dark ? 'bg-emerald-500/10 text-emerald-400 group-hover:shadow-emerald-900/20' : ''">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-7 7m7-7l7 7"/>
+                            </svg>
+                        </div>
+                        @if(($todaySummary['income_change']['percent'] ?? 0) > 0)
+                        <span class="text-[10px] font-black px-2 py-1 rounded-lg
+                            {{ ($todaySummary['income_change']['trend'] ?? 'up') === 'up' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700' }}"
+                            :class="dark ? '{{ ($todaySummary['income_change']['trend'] ?? 'up') === 'up' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400' }}' : ''">
+                            {{ ($todaySummary['income_change']['trend'] ?? 'up') === 'up' ? '↑' : '↓' }} {{ $todaySummary['income_change']['percent'] ?? 0 }}%
+                        </span>
+                        @endif
+                    </div>
+
+                    <p class="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)] mb-1">Uang Masuk</p>
+                    <h5 class="text-xl font-black tracking-tight mb-1"
+                        :class="dark ? 'text-emerald-400' : 'text-emerald-600'">
+                        Rp {{ number_format($todaySummary['income_today'] ?? 0, 0, ',', '.') }}
+                    </h5>
+                    <p class="text-[10px] font-semibold mb-4" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">
+                        Kemarin: {{ $this->formatCurrencyShort($todaySummary['income_yesterday'] ?? 0) }}
+                    </p>
+
+                    {{-- Sparkline --}}
+                    <div class="mt-auto">
+                        <p class="text-[9px] font-bold uppercase tracking-widest mb-2" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">Tren 7 Hari</p>
+                        @php
+                            $incomeTrend = $todaySummary['income_trend'] ?? [0,0,0,0,0,0,0];
+                            $maxIncome = max(max($incomeTrend), 1);
+                            $sparkWidth = 100;
+                            $sparkHeight = 40;
+                        @endphp
+                        <svg viewBox="0 0 {{ $sparkWidth }} {{ $sparkHeight }}" class="w-full h-10 overflow-visible" preserveAspectRatio="none">
+                            {{-- Gradient fill --}}
+                            <defs>
+                                <linearGradient id="incomeGradFill" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#10b981" stop-opacity="0.3"/>
+                                    <stop offset="100%" stop-color="#10b981" stop-opacity="0.02"/>
+                                </linearGradient>
+                            </defs>
+                            @php
+                                $points = [];
+                                foreach ($incomeTrend as $i => $val) {
+                                    $x = ($i / 6) * $sparkWidth;
+                                    $y = $sparkHeight - (($val / $maxIncome) * ($sparkHeight - 4)) - 2;
+                                    $points[] = "$x,$y";
+                                }
+                                $polyline = implode(' ', $points);
+                                $firstX = 0;
+                                $lastX = $sparkWidth;
+                                $fillPoints = "0,$sparkHeight " . $polyline . " $sparkWidth,$sparkHeight";
+                            @endphp
+                            <polygon points="{{ $fillPoints }}" fill="url(#incomeGradFill)"/>
+                            <polyline points="{{ $polyline }}" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            {{-- Active dot on last point --}}
+                            @php $lastPoint = end($points); [$lx, $ly] = explode(',', $lastPoint); @endphp
+                            <circle cx="{{ $lx }}" cy="{{ $ly }}" r="3" fill="#10b981" stroke="white" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            {{-- 💸 UANG KELUAR HARI INI (col-span-3) --}}
+            <div class="lg:col-span-3 rounded-2xl border overflow-hidden shadow-sm transition-all group"
+                 :class="dark ? 'bg-[var(--color-dm-surface)] border-[var(--color-dm-border)]' : 'bg-white border-[var(--color-border)]'">
+                <div class="h-1" style="background: linear-gradient(90deg, #e11d48, #f43f5e, #fb7185);"></div>
+
+                <div class="p-5 flex flex-col h-[calc(100%-4px)]">
+                    {{-- Header --}}
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-rose-50 text-rose-600 transition-all duration-300 group-hover:bg-rose-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-rose-200"
+                             :class="dark ? 'bg-rose-500/10 text-rose-400 group-hover:shadow-rose-900/20' : ''">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 5v14m0 0l-7-7m7 7l7-7"/>
+                            </svg>
+                        </div>
+                        @if(($todaySummary['expense_change']['percent'] ?? 0) > 0)
+                        <span class="text-[10px] font-black px-2 py-1 rounded-lg
+                            {{ ($todaySummary['expense_change']['trend'] ?? 'up') === 'up' ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700' }}"
+                            :class="dark ? '{{ ($todaySummary['expense_change']['trend'] ?? 'up') === 'up' ? 'bg-rose-500/10 text-rose-400' : 'bg-emerald-500/10 text-emerald-400' }}' : ''">
+                            {{ ($todaySummary['expense_change']['trend'] ?? 'up') === 'up' ? '↑' : '↓' }} {{ $todaySummary['expense_change']['percent'] ?? 0 }}%
+                        </span>
+                        @endif
+                    </div>
+
+                    <p class="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)] mb-1">Uang Keluar</p>
+                    <h5 class="text-xl font-black tracking-tight mb-1"
+                        :class="dark ? 'text-rose-400' : 'text-rose-600'">
+                        Rp {{ number_format($todaySummary['expense_today'] ?? 0, 0, ',', '.') }}
+                    </h5>
+                    <p class="text-[10px] font-semibold mb-4" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">
+                        Kemarin: {{ $this->formatCurrencyShort($todaySummary['expense_yesterday'] ?? 0) }}
+                    </p>
+
+                    {{-- Top Expense Categories --}}
+                    <div class="mt-auto">
+                        <p class="text-[9px] font-bold uppercase tracking-widest mb-2" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">Top Kategori</p>
+                        @php
+                            $topCats = $todaySummary['top_expense_categories'] ?? [];
+                            $maxCatTotal = count($topCats) > 0 ? max(array_column($topCats, 'total')) : 1;
+                            $catColors = ['#f43f5e', '#fb923c', '#a78bfa'];
+                        @endphp
+                        @if(count($topCats) > 0)
+                        <div class="space-y-2">
+                            @foreach($topCats as $idx => $cat)
+                            <div>
+                                <div class="flex items-center justify-between mb-0.5">
+                                    <span class="text-[10px] font-bold truncate max-w-[90px]" :class="dark ? 'text-[var(--color-dm-text)]' : 'text-slate-600'">{{ $cat['name'] }}</span>
+                                    <span class="text-[10px] font-black" :class="dark ? 'text-[var(--color-dm-text)]' : 'text-slate-700'">{{ $this->formatCurrencyShort($cat['total']) }}</span>
+                                </div>
+                                <div class="h-1.5 rounded-full overflow-hidden" :class="dark ? 'bg-white/5' : 'bg-slate-100'">
+                                    <div class="h-full rounded-full transition-all duration-700"
+                                         style="width: {{ ($cat['total'] / $maxCatTotal) * 100 }}%; background: {{ $catColors[$idx] ?? '#94a3b8' }};"></div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @else
+                        <div class="text-center py-3 rounded-xl" :class="dark ? 'bg-[var(--color-dm-surface2)]' : 'bg-slate-50'">
+                            <p class="text-[10px] font-bold" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">Belum ada pengeluaran</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ===== 📊 RAB AKTIF PROGRESS TRACKER ===== --}}
+    @if(($activeRabs['count'] ?? 0) > 0)
+    <div class="mb-6 rounded-2xl border overflow-hidden shadow-sm transition-colors"
+         :class="dark ? 'bg-[var(--color-dm-surface)] border-[var(--color-dm-border)]' : 'bg-white border-[var(--color-border)]'">
+        {{-- Top accent --}}
+        <div class="h-1" style="background: linear-gradient(90deg, #22AF85, #FFC232, #22AF85);"></div>
+
+        <div class="p-5 md:p-6">
+            {{-- Header --}}
+            <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300"
+                         style="background: linear-gradient(135deg, rgba(34,175,133,0.1), rgba(255,194,50,0.1));">
+                        <svg class="w-5 h-5" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-sm tracking-tight leading-none" :class="dark ? 'text-[var(--color-dm-text)]' : 'text-slate-900'">RAB Aktif</h3>
+                        <p class="text-[10px] font-bold uppercase tracking-widest mt-0.5" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">
+                            {{ $activeRabs['count'] }} Anggaran • Terpakai {{ number_format($activeRabs['overall_percent'] ?? 0, 1) }}%
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    {{-- Overall mini-stats --}}
+                    <div class="hidden md:flex items-center gap-4 mr-2">
+                        <div class="text-right">
+                            <p class="text-[9px] font-bold uppercase tracking-widest" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">Total Budget</p>
+                            <p class="text-sm font-black" :class="dark ? 'text-[var(--color-dm-text)]' : 'text-slate-800'">{{ $this->formatCurrencyShort($activeRabs['total_budget'] ?? 0) }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[9px] font-bold uppercase tracking-widest" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">Sisa</p>
+                            <p class="text-sm font-black text-emerald-600">{{ $this->formatCurrencyShort($activeRabs['total_remaining'] ?? 0) }}</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('rabs') }}" class="w-8 h-8 rounded-xl flex items-center justify-center transition-all border"
+                       :class="dark ? 'bg-[var(--color-dm-surface2)] border-[var(--color-dm-border)] text-[var(--color-dm-muted)] hover:text-[var(--color-primary)]' : 'bg-slate-50 border-slate-100 text-slate-400 hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-muted)]'">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            {{-- RAB Items --}}
+            <div class="space-y-3">
+                @foreach(($activeRabs['items'] ?? []) as $rab)
+                @php
+                    $barColor = $rab['status'] === 'danger' ? '#ef4444' : ($rab['status'] === 'warning' ? '#f59e0b' : '#22AF85');
+                    $barBg = $rab['status'] === 'danger' ? 'bg-rose-50' : ($rab['status'] === 'warning' ? 'bg-amber-50' : 'bg-emerald-50');
+                    $textColor = $rab['status'] === 'danger' ? 'text-rose-600' : ($rab['status'] === 'warning' ? 'text-amber-600' : 'text-emerald-600');
+                @endphp
+                <div class="rounded-xl p-4 border transition-all hover:shadow-sm group/rab"
+                     :class="dark ? 'bg-[var(--color-dm-surface2)] border-[var(--color-dm-border)] hover:border-[var(--color-primary)]/30' : 'bg-slate-50/50 border-slate-100 hover:border-slate-200'">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ $barBg }} transition-colors"
+                                 :class="dark ? 'bg-white/5' : ''">
+                                <span class="text-xs">📋</span>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-[11px] font-bold truncate" :class="dark ? 'text-[var(--color-dm-text)]' : 'text-slate-700'">{{ $rab['name'] }}</p>
+                                <p class="text-[9px] font-semibold" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">
+                                    {{ $rab['start_date'] }}{{ $rab['end_date'] ? ' — ' . $rab['end_date'] : '' }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <div class="text-right hidden sm:block">
+                                <p class="text-[10px] font-bold" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-500'">
+                                    {{ $this->formatCurrencyShort($rab['used_budget']) }} / {{ $this->formatCurrencyShort($rab['total_budget']) }}
+                                </p>
+                            </div>
+                            <span class="text-[11px] font-black px-2 py-1 rounded-lg {{ $textColor }}
+                                {{ $rab['status'] === 'danger' ? 'bg-rose-50' : ($rab['status'] === 'warning' ? 'bg-amber-50' : 'bg-emerald-50') }}"
+                                :class="dark ? 'opacity-90' : ''">
+                                {{ number_format($rab['percent'], 1) }}%
+                            </span>
+                        </div>
+                    </div>
+                    {{-- Progress bar --}}
+                    <div class="h-2 rounded-full overflow-hidden" :class="dark ? 'bg-white/5' : 'bg-slate-200/60'">
+                        <div class="h-full rounded-full transition-all duration-1000 ease-out relative"
+                             style="width: {{ min($rab['percent'], 100) }}%; background: {{ $barColor }};">
+                            @if($rab['status'] === 'danger')
+                            <div class="absolute inset-0 rounded-full animate-pulse" style="background: {{ $barColor }}; opacity: 0.5;"></div>
+                            @endif
+                        </div>
+                    </div>
+                    @if($rab['percent'] >= 90)
+                    <p class="text-[9px] font-black mt-1.5 flex items-center gap-1 uppercase tracking-tighter">
+                        @if($rab['percent'] > 100)
+                            <span class="text-rose-600 animate-pulse">⚠️ Melebihi Budget (Sisa: -Rp {{ number_format(abs($rab['used_budget'] - $rab['total_budget']), 0, ',', '.') }})</span>
+                        @elseif($rab['percent'] == 100)
+                            <span class="text-emerald-500">✓ Sudah Terbayar (Lunas)</span>
+                        @else
+                            <span class="text-amber-500">⚡ Hampir Limit</span>
+                        @endif
+                    </p>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @else
+    {{-- Empty RAB State --}}
+    <div class="mb-6 rounded-2xl border p-5 md:p-6 shadow-sm transition-colors"
+         :class="dark ? 'bg-[var(--color-dm-surface)] border-[var(--color-dm-border)]' : 'bg-white border-[var(--color-border)]'">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                     :class="dark ? 'bg-[var(--color-dm-surface2)]' : 'bg-slate-50'">
+                    <span class="text-lg opacity-60">📊</span>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black" :class="dark ? 'text-[var(--color-dm-text)]' : 'text-slate-700'">Belum Ada RAB Aktif</h3>
+                    <p class="text-[10px] font-semibold" :class="dark ? 'text-[var(--color-dm-muted)]' : 'text-slate-400'">Buat rencana anggaran untuk monitoring budget</p>
+                </div>
+            </div>
+            <a href="{{ route('rabs') }}"
+               class="px-4 py-2 rounded-xl text-[11px] font-bold transition-all shadow-sm"
+               style="background: var(--color-primary); color: white; box-shadow: 0 4px 12px rgba(34,175,133,0.2);">
+                + Buat RAB
+            </a>
+        </div>
+    </div>
+    @endif
+
     {{-- ===== WAWASAN AI ===== --}}
     @if(count($insights) > 0)
     <div class="mb-6 rounded-3xl p-5 md:p-6 relative overflow-hidden shadow-lg"

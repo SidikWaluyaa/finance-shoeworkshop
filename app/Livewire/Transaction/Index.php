@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\On;
 use App\Models\Transaction;
+use App\Models\Account;
 
 class Index extends Component
 {
@@ -14,8 +15,9 @@ class Index extends Component
     public string $search = '';
     public string $filterType = '';
     public string $filterSource = '';
+    public string $filterAccount = '';
 
-    protected $queryString = ['search', 'filterType', 'filterSource'];
+    protected $queryString = ['search', 'filterType', 'filterSource', 'filterAccount'];
 
     public function updatingSearch(): void
     {
@@ -56,7 +58,12 @@ class Index extends Component
             $query->where('source_type', $this->filterSource);
         }
 
+        if ($this->filterAccount) {
+            $query->where('account_id', $this->filterAccount);
+        }
+
         return view('livewire.transaction.index', [
+            'accounts' => Account::orderBy('name')->get(),
             'transactions' => $query->paginate(15),
         ]);
     }

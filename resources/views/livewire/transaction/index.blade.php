@@ -37,6 +37,12 @@
                 <option value="B2B">B2B</option>
                 <option value="B2C">B2C</option>
             </select>
+            <select wire:model.live="filterAccount" class="form-select sm:w-44">
+                <option value="">Semua Akun</option>
+                @foreach($accounts as $account)
+                    <option value="{{ $account->id }}">{{ $account->name }}</option>
+                @endforeach
+            </select>
         </div>
     </div>
 

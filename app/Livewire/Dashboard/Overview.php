@@ -15,6 +15,11 @@ class Overview extends Component
     public $recentTransactions;
     public string $period = 'this_month'; // this_month, 3_months, this_year, all
 
+    // New: Today's real-time data
+    public array $todaySummary = [];
+    public array $todayInvoices = [];
+    public array $activeRabs = [];
+
     protected $listeners = ['dataUpdated' => 'refreshData'];
 
     protected $queryString = ['period'];
@@ -50,6 +55,11 @@ class Overview extends Component
         $this->healthScore = $healthService->calculate();
         $this->insights = $healthService->generateInsights();
         $this->recentTransactions = $financeService->getRecentTransactions(5);
+
+        // New: Load today's real-time data
+        $this->todaySummary = $financeService->getTodaySummary();
+        $this->todayInvoices = $financeService->getTodayInvoices();
+        $this->activeRabs = $financeService->getActiveRabs();
     }
 
     public function formatCurrencyShort($value): string
@@ -73,3 +83,4 @@ class Overview extends Component
         return view('livewire.dashboard.overview');
     }
 }
+

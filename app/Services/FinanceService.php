@@ -161,6 +161,151 @@ class FinanceService
     }
 
     /**
+     * Get today's financial pulse — income & expense with comparison and trends.
+     */
+    public function getTodaySummary(): array
+    {
+        $today = Carbon::today()->toDateString();
+        $yesterday = Carbon::yesterday()->toDateString();
+
+        $incomeToday = $this->getTotalIncome($today, $today);
+        $expenseToday = $this->getTotalExpense($today, $today);
+        $incomeYesterday = $this->getTotalIncome($yesterday, $yesterday);
+        $expenseYesterday = $this->getTotalExpense($yesterday, $yesterday);
+
+        return [
+            'income_today' => $incomeToday,
+            'expense_today' => $expenseToday,
+            'income_yesterday' => $incomeYesterday,
+            'expense_yesterday' => $expenseYesterday,
+            'income_change' => $this->calculateGrowth($incomeYesterday, $incomeToday),
+            'expense_change' => $this->calculateGrowth($expenseYesterday, $expenseToday),
+            'net_today' => $incomeToday - $expenseToday,
+            'income_trend' => $this->getLast7DaysData('income'),
+            'expense_trend' => $this->getLast7DaysData('expense'),
+            'top_expense_categories' => $this->getTopExpenseCategoriesForDate($today),
+            'transaction_count_today' => Transaction::where('date', $today)->count(),
+        ];
+    }
+
+    /**
+     * Get today's invoices — newly created + due today.
+     */
+    public function getTodayInvoices(): array
+    {
+        $today = Carbon::today()->toDateString();
+
+        $createdToday = Invoice::whereDate('created_at', $today)
+            ->orderBy('total', 'desc')
+            ->get();
+
+        $dueToday = Invoice::whereDate('due_date', $today)
+            ->where('status', '!=', 'paid')
+            ->orderBy('total', 'desc')
+            ->get();
+
+        $overdueInvoices = Invoice::where('status', '!=', 'paid')
+            ->whereDate('due_date', '<', $today)
+            ->count();
+
+        $allTodayIds = $createdToday->pluck('id')->merge($dueToday->pluck('id'))->unique();
+
+        return [
+            'created_today' => $createdToday,
+            'due_today' => $dueToday,
+            'total_created_amount' => $createdToday->sum('total'),
+            'total_due_amount' => $dueToday->sum('total'),
+            'count_created' => $createdToday->count(),
+            'count_due' => $dueToday->count(),
+            'count_overdue' => $overdueInvoices,
+            'total_count' => $allTodayIds->count(),
+        ];
+    }
+
+    /**
+     * Get active RABs with budget progress (end_date >= today or no end_date).
+     */
+    public function getActiveRabs(): array
+    {
+        $today = Carbon::today();
+
+        $rabs = Rab::where(function ($q) use ($today) {
+                $q->where('end_date', '>=', $today)
+                  ->orWhereNull('end_date');
+            })
+            ->orderBy('start_date', 'desc')
+            ->get()
+            ->map(function (Rab $rab) {
+                $used = (float) $rab->transactions()->where('type', 'expense')->sum('amount');
+                $total = (float) $rab->total_budget;
+                $percent = $total > 0 ? round(($used / $total) * 100, 1) : 0;
+
+                return [
+                    'id' => $rab->id,
+                    'name' => $rab->name,
+                    'total_budget' => $total,
+                    'used_budget' => $used,
+                    'remaining' => max(0, $total - $used),
+                    'percent' => min($percent, 100),
+                    'status' => $percent >= 90 ? 'danger' : ($percent >= 70 ? 'warning' : 'safe'),
+                    'start_date' => $rab->start_date?->format('d M Y'),
+                    'end_date' => $rab->end_date?->format('d M Y'),
+                    'is_over_budget' => $used > $total,
+                ];
+            })
+            ->toArray();
+
+        $totalBudget = array_sum(array_column($rabs, 'total_budget'));
+        $totalUsed = array_sum(array_column($rabs, 'used_budget'));
+
+        return [
+            'items' => $rabs,
+            'count' => count($rabs),
+            'total_budget' => $totalBudget,
+            'total_used' => $totalUsed,
+            'total_remaining' => max(0, $totalBudget - $totalUsed),
+            'overall_percent' => $totalBudget > 0 ? round(($totalUsed / $totalBudget) * 100, 1) : 0,
+        ];
+    }
+
+    /**
+     * Get last 7 days trend data for sparkline charts.
+     */
+    private function getLast7DaysData(string $type): array
+    {
+        $data = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::today()->subDays($i)->toDateString();
+            $amount = (float) Transaction::where('type', $type)
+                ->where('date', $date)
+                ->sum('amount');
+            $data[] = $amount;
+        }
+        return $data;
+    }
+
+    /**
+     * Get top expense categories for a specific date.
+     */
+    private function getTopExpenseCategoriesForDate(string $date, int $limit = 3): array
+    {
+        return Transaction::where('type', 'expense')
+            ->where('date', $date)
+            ->whereNotNull('category_id')
+            ->select('category_id', DB::raw('SUM(amount) as total'))
+            ->groupBy('category_id')
+            ->orderByDesc('total')
+            ->limit($limit)
+            ->with('category')
+            ->get()
+            ->map(fn($t) => [
+                'name' => $t->category?->name ?? 'Lainnya',
+                'total' => (float) $t->total,
+            ])
+            ->toArray();
+    }
+
+    /**
      * Get dashboard summary with optional date filtering.
      */
     public function getDashboardSummary(?string $startDate = null, ?string $endDate = null): array
