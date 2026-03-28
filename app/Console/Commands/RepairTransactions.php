@@ -32,9 +32,11 @@ class RepairTransactions extends Command
 
         $this->info("Scanning transactions for date: {$date}...");
 
-        $query = Transaction::whereDate('created_at', $date)
+        $query = Transaction::where('created_at', '>=', $date . ' 00:00:00')
+            ->where('created_at', '<=', $date . ' 23:59:59')
             ->where('amount', '<', 5000); // Most logical stunted values will be low
 
+        /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Transaction[] $transactions */
         $transactions = $query->get();
 
         if ($transactions->isEmpty()) {
@@ -63,6 +65,7 @@ class RepairTransactions extends Command
 
         if ($this->confirm("Do you want to apply these changes? (Multiplying by 1000 and setting type to 'income')")) {
             foreach ($transactions as $t) {
+                /** @var \App\Models\Transaction $t */
                 $t->update([
                     'amount' => $t->amount * 1000,
                     'type' => 'income'
