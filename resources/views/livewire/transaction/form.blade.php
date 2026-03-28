@@ -1,7 +1,7 @@
 <div>
     @if($showModal)
-    <div class="modal-backdrop" x-data x-transition>
-        <div class="modal-content !max-w-4xl" @click.outside="$wire.closeModal()">
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm overflow-y-auto" x-data x-transition>
+        <div class="relative w-full max-w-4xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl shadow-emerald-900/10 dark:shadow-black/50 border border-slate-100 dark:border-slate-700/50 p-6 sm:p-8 m-auto transform transition-all" @click.outside="if (!$event.target.closest('.default-select2') && !$event.target.closest('.flatpickr-calendar')) $wire.closeModal()">
             <div class="flex items-center justify-between mb-4 sm:mb-6">
                 <h3 class="text-xl font-black text-[var(--color-dark)] dark:text-white flex items-center gap-2">
                     <svg class="w-6 h-6 text-[#22AF85]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
@@ -129,10 +129,10 @@
                 </div>
 
                 <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700/50 mt-4">
-                    <button type="button" wire:click="closeModal" class="btn bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 w-1/3">
+                    <button type="button" wire:click="closeModal" wire:loading.attr="disabled" class="btn bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 w-1/3 disabled:opacity-50 disabled:cursor-not-allowed">
                         Kembali
                     </button>
-                    <button type="submit" class="btn btn-primary flex-1 shadow-lg shadow-[#22AF85]/30">
+                    <button type="submit" wire:loading.attr="disabled" class="btn btn-primary flex-1 shadow-lg shadow-[#22AF85]/30 disabled:opacity-50 disabled:cursor-not-allowed">
                         <span wire:loading.remove wire:target="save">💾 Simpan Transaksi</span>
                         <span wire:loading wire:target="save" class="flex items-center justify-center gap-2">
                             <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>

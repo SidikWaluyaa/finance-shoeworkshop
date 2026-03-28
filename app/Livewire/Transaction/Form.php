@@ -78,6 +78,9 @@ class Form extends Component
             if ($defaultAccount) $this->account_id = $defaultAccount->id;
         }
 
+        // Clean amount string from commas to handle formatting gracefully
+        $this->amount = str_replace(',', '.', $this->amount);
+
         $this->validate();
 
         $data = [
@@ -92,16 +95,21 @@ class Form extends Component
             'expense_location_id' => $this->expense_location_id ?: null,
         ];
 
-        if ($this->evidence) {
-            $data['evidence_path'] = $this->evidence->store('evidence', 'public');
+        try {
+            if ($this->evidence) {
+                $data['evidence_path'] = $this->evidence->store('evidence', 'public');
+            }
+
+            $service->store($data, $this->transactionId);
+
+            $this->showModal = false;
+            $this->resetFields();
+            $this->dispatch('dataUpdated');
+            $this->dispatch('alert', ['type' => 'success', 'message' => 'Transaksi berhasil disimpan!']);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error saving transaction: ' . $e->getMessage());
+            $this->dispatch('alert', ['type' => 'error', 'message' => 'Gagal menyimpan transaksi. Terjadi kesalahan sistem.']);
         }
-
-        $service->store($data, $this->transactionId);
-
-        $this->showModal = false;
-        $this->resetFields();
-        $this->dispatch('dataUpdated');
-        $this->dispatch('alert', ['type' => 'success', 'message' => 'Transaksi berhasil disimpan!']);
     }
 
     public function closeModal(): void
@@ -113,7 +121,7 @@ class Form extends Component
     private function resetFields(): void
     {
         $this->transactionId = null;
-        $this->account_id = 0;
+        $this->account_id = null;
         $this->type = 'expense';
         $this->amount = '';
         $this->category_id = null;
