@@ -87,12 +87,14 @@ class RolePermissionSeeder extends Seeder
 
         // Assign Role to Existing Users
         $adminUsers = User::whereIn('email', ['admin@shoeworkshop.com', 'admin@example.com'])->get();
+        /** @var User $user */
         foreach ($adminUsers as $user) {
             $user->assignRole($superAdmin);
         }
 
         // If no specifically named admin exists, assign to first user
         if ($adminUsers->isEmpty()) {
+            /** @var User|null $firstUser */
             $firstUser = User::first();
             if ($firstUser) {
                 $firstUser->assignRole($superAdmin);

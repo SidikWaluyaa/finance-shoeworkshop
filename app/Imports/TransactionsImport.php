@@ -29,7 +29,7 @@ class TransactionsImport implements ToModel, WithHeadingRow, WithValidation, Ski
     }
 
     /**
-     * Parse amount from Indonesian currency format (e.g., "100.000" or "1.500.000")
+     * Parse amount from any currency format (US: 123,456.78 or ID: 123.456,78)
      */
     private function parseAmount($raw): float
     {
@@ -43,26 +43,46 @@ class TransactionsImport implements ToModel, WithHeadingRow, WithValidation, Ski
 
         $cleaned = (string) $raw;
 
-        // Remove currency prefix (Rp, IDR, etc.)
+        // Remove currency prefix and spaces
         $cleaned = preg_replace('/^(Rp\.?\s*|IDR\s*)/i', '', $cleaned);
         $cleaned = str_replace(' ', '', $cleaned);
 
-        // Detect Indonesian format: dots as thousands, comma as decimal
-        if (str_contains($cleaned, '.') && str_contains($cleaned, ',')) {
-            // "1.500.000,50" → remove dots, replace comma with dot
-            $cleaned = str_replace('.', '', $cleaned);
-            $cleaned = str_replace(',', '.', $cleaned);
-        } elseif (str_contains($cleaned, '.')) {
-            // Only dots: check if it's thousands separator or decimal
+        // Heuristic to handle both US (1,000.00) and ID (1.000,00)
+        $dotPos = strrpos($cleaned, '.');
+        $commaPos = strrpos($cleaned, ',');
+
+        if ($dotPos !== false && $commaPos !== false) {
+            // Both exist. The last one is the decimal separator.
+            if ($dotPos > $commaPos) {
+                // US format: 1,000.00 -> remove comma
+                $cleaned = str_replace(',', '', $cleaned);
+            } else {
+                // ID format: 1.000,00 -> remove dot, replace comma with dot
+                $cleaned = str_replace('.', '', $cleaned);
+                $cleaned = str_replace(',', '.', $cleaned);
+            }
+        } elseif ($dotPos !== false) {
+            // Only dots. Could be thousand (1.000) or decimal (1.00)
+            // If there's only one dot and it's followed by exactly 2 digits, it's decimal.
+            // If it's followed by 3 digits, it's thousands (Indonesian style).
             $parts = explode('.', $cleaned);
             $lastPart = end($parts);
-            if (strlen($lastPart) === 3 && count($parts) > 1) {
-                // Indonesian thousands: "100.000" → "100000"
+            if (count($parts) > 2 || (strlen($lastPart) === 3 && count($parts) === 2)) {
+                // Thousand separator: 1.000 or 1.000.000
                 $cleaned = str_replace('.', '', $cleaned);
             }
-        } elseif (str_contains($cleaned, ',')) {
-            // Only comma: treat as decimal "100,50" → "100.50"
-            $cleaned = str_replace(',', '.', $cleaned);
+            // else: standard decimal 100.50
+        } elseif ($commaPos !== false) {
+            // Only commas. Could be thousand (1,000) or decimal (1,00)
+            $parts = explode(',', $cleaned);
+            $lastPart = end($parts);
+            if (count($parts) > 2 || (strlen($lastPart) === 3 && count($parts) === 2)) {
+                // Thousand separator: 1,000 or 1,000,000
+                $cleaned = str_replace(',', '', $cleaned);
+            } else {
+                // Decimal separator: 100,50 -> 100.50
+                $cleaned = str_replace(',', '.', $cleaned);
+            }
         }
 
         return (float) $cleaned;
@@ -81,10 +101,10 @@ class TransactionsImport implements ToModel, WithHeadingRow, WithValidation, Ski
         $category = !empty($row['kategori']) ? Category::where('name', $row['kategori'])->first() : null;
         $location = !empty($row['lokasi']) ? ExpenseLocation::where('name', $row['lokasi'])->first() : null;
 
-        // Parse type: null if blank
-        $type = null;
+        // Parse type: default to 'income' if blank
+        $type = 'income'; 
         if (!empty($row['tipe'])) {
-            $type = strtolower($row['tipe']) === 'masuk' ? 'income' : 'expense';
+            $type = strtolower($row['tipe']) === 'keluar' ? 'expense' : 'income';
         }
 
         // Parse amount with Indonesian currency support
