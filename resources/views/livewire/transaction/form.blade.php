@@ -1,7 +1,11 @@
 <div>
     @if($showModal)
-    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm overflow-y-auto" x-data x-transition>
-        <div class="relative w-full max-w-4xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl shadow-emerald-900/10 dark:shadow-black/50 border border-slate-100 dark:border-slate-700/50 p-6 sm:p-8 m-auto transform transition-all" @click.outside="if (!$event.target.closest('.default-select2') && !$event.target.closest('.flatpickr-calendar')) $wire.closeModal()">
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto" x-data x-transition>
+        <!-- Backdrop transparan yang terpisah -->
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" @click="if (!$event.target.closest('.default-select2') && !$event.target.closest('.flatpickr-calendar')) { $wire.closeModal(); }"></div>
+        
+        <!-- Kotak Konten Utama -->
+        <div class="relative z-10 w-full max-w-4xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl shadow-emerald-900/10 dark:shadow-black/50 border border-slate-100 dark:border-slate-700/50 p-6 sm:p-8 m-auto transform transition-all pointer-events-auto">
             <div class="flex items-center justify-between mb-4 sm:mb-6">
                 <h3 class="text-xl font-black text-[var(--color-dark)] dark:text-white flex items-center gap-2">
                     <svg class="w-6 h-6 text-[#22AF85]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
@@ -77,7 +81,7 @@
                 <!-- ROW 3: Lokasi (jika pengeluaran) & Deskripsi -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @if($type === 'expense')
-                    <div class="sm:col-span-1">
+                    <div wire:key="location-wrapper" class="sm:col-span-1">
                         <label class="form-label font-semibold text-[#22AF85]">📍 Lokasi Pengeluaran (Opsional)</label>
                         <select wire:model="expense_location_id" class="form-select border-[#22AF85]/20 focus:border-[#22AF85] focus:ring-[#22AF85]/20 dark:bg-slate-800">
                             <option value="">Pilih Lokasi / Vendor</option>
@@ -87,10 +91,9 @@
                         </select>
                         <p class="text-[9px] text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-wider font-bold">Lacak tujuan pengeluaran</p>
                     </div>
-                    <div class="sm:col-span-1">
-                    @else
-                    <div class="sm:col-span-2">
                     @endif
+                    
+                    <div wire:key="desc-wrapper" class="{{ $type === 'expense' ? 'sm:col-span-1' : 'sm:col-span-2' }}">
                         <label class="form-label">Deskripsi</label>
                         <textarea wire:model="description" class="form-input" rows="2" placeholder="Tuliskan keterangan lebih lanjut..."></textarea>
                     </div>
