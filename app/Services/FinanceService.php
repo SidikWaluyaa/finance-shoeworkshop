@@ -229,14 +229,18 @@ class FinanceService
     {
         $today = Carbon::today();
 
-        $rabs = Rab::where(function ($q) use ($today) {
-                $q->where('end_date', '>=', $today)
-                  ->orWhereNull('end_date');
+        $rabs = Rab::withSum(['transactions as used_budget_sum' => function($q) {
+                $q->where('type', 'expense');
+            }], 'amount')
+            ->where(function ($q) use ($today) {
+                $q->where('end_date', '>=', $today) // Masih dalam masa aktif
+                  ->orWhereNull('end_date')        // Tanpa batas waktu (Evergreen)
+                  ->orWhereRaw('total_budget > (SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE rab_id = rabs.id AND type = "expense")'); // Belum lunas
             })
             ->orderBy('start_date', 'desc')
             ->get()
             ->map(function (Rab $rab) {
-                $used = (float) $rab->transactions()->where('type', 'expense')->sum('amount');
+                $used = (float) ($rab->used_budget_sum ?? 0);
                 $total = (float) $rab->total_budget;
                 $percent = $total > 0 ? round(($used / $total) * 100, 1) : 0;
 

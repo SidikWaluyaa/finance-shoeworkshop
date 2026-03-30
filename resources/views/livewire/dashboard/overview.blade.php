@@ -1,4 +1,4 @@
-<div wire:poll.60s="refreshData">
+<div wire:poll.15s="refreshData">
     {{-- ===== PAGE HEADER ===== --}}
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div class="flex items-center gap-4">
