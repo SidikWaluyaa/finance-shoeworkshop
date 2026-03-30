@@ -67,7 +67,7 @@
                         <div class="flex items-center justify-between mb-1.5">
                             <div class="flex flex-col min-w-0">
                                 <span class="text-[11px] font-bold truncate">{{ $rab['name'] }}</span>
-                                <span class="text-[9px] opacity-40 font-black uppercase tracking-tighter">Budget: {{ $this->formatCurrencyShort($rab['total_budget']) }}</span>
+                                <span class="text-[9px] text-emerald-400/80 font-black uppercase tracking-tighter">Budget: {{ $this->formatCurrencyShort($rab['total_budget']) }}</span>
                             </div>
                             <div class="text-right">
                                 <span class="text-[11px] font-black text-emerald-400">{{ $rab['percent'] }}%</span>
