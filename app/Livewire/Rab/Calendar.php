@@ -50,8 +50,13 @@ class Calendar extends Component
                   });
         })->get();
 
-        $this->payables = \App\Models\Payable::whereBetween('due_date', [$startOfMonth, $endOfMonth])
-            ->get();
+        $this->payables = \App\Models\Payable::where(function($q) use ($startOfMonth, $endOfMonth) {
+                $q->whereBetween('promise_to_pay_date', [$startOfMonth, $endOfMonth])
+                  ->orWhere(function($sq) use ($startOfMonth, $endOfMonth) {
+                      $sq->whereNull('promise_to_pay_date')
+                         ->whereBetween('due_date', [$startOfMonth, $endOfMonth]);
+                  });
+            })->get();
     }
 
     public function previousMonth()

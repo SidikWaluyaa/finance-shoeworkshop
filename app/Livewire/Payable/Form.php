@@ -13,6 +13,7 @@ class Form extends Component
     public string $total = '';
     public string $status = 'unpaid';
     public string $due_date = '';
+    public string $promise_to_pay_date = '';
     public string $description = '';
 
     public bool $showModal = false;
@@ -25,6 +26,7 @@ class Form extends Component
             'supplier_name' => 'required|string|max:255',
             'total' => 'required|numeric|min:0',
             'due_date' => 'required|date',
+            'promise_to_pay_date' => 'nullable|date',
             'description' => 'nullable|string|max:500',
         ];
     }
@@ -44,6 +46,7 @@ class Form extends Component
         $this->total = $payable->total;
         $this->status = $payable->status;
         $this->due_date = \Carbon\Carbon::parse($payable->due_date)->format('Y-m-d');
+        $this->promise_to_pay_date = $payable->promise_to_pay_date ? \Carbon\Carbon::parse($payable->promise_to_pay_date)->format('Y-m-d') : '';
         $this->description = $payable->description ?? '';
         $this->showModal = true;
     }
@@ -57,6 +60,7 @@ class Form extends Component
             'supplier_name' => $this->supplier_name,
             'total' => $this->total,
             'due_date' => $this->due_date,
+            'promise_to_pay_date' => $this->promise_to_pay_date ?: null,
             'description' => $this->description,
         ];
 
@@ -85,6 +89,7 @@ class Form extends Component
         $this->total = '';
         $this->status = 'unpaid';
         $this->due_date = '';
+        $this->promise_to_pay_date = '';
         $this->description = '';
     }
 

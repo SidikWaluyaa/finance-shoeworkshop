@@ -45,6 +45,7 @@
                         <th class="text-right">Total</th>
                         <th>Status</th>
                         <th>Jatuh Tempo</th>
+                        <th>Janji Bayar</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -76,6 +77,9 @@
                                 @endif
                             </td>
                             <td class="whitespace-nowrap text-sm">{{ $pay->due_date->format('d M Y') }}</td>
+                            <td class="whitespace-nowrap text-sm font-bold text-emerald-500">
+                                {{ $pay->promise_to_pay_date ? $pay->promise_to_pay_date->format('d M Y') : '-' }}
+                            </td>
                             <td class="text-center">
                                 <div class="flex items-center justify-center gap-1">
                                     @if($pay->payment_status !== 'paid')
@@ -96,7 +100,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-16">
+                            <td colspan="6" class="text-center py-16">
                                 <div class="flex flex-col items-center justify-center space-y-3">
                                     <div class="w-16 h-16 rounded-3xl bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center">
                                         <span class="text-2xl">🙌</span>

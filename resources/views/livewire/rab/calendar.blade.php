@@ -43,6 +43,9 @@
                 });
 
                 $dayPayables = $payables->filter(function($p) use ($currentDate) {
+                    if ($p->promise_to_pay_date) {
+                        return Carbon\Carbon::parse($p->promise_to_pay_date)->startOfDay()->equalTo($currentDate);
+                    }
                     return Carbon\Carbon::parse($p->due_date)->startOfDay()->equalTo($currentDate);
                 });
             @endphp
@@ -75,9 +78,9 @@
                             };
                         @endphp
                         <div class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold {{ $colorClass }} border rounded pl-1.5 border-l-[3px] truncate cursor-pointer hover:opacity-80 transition-all shadow-sm"
-                             title="Utang: {{ $payable->supplier_name }} - Rp {{ number_format($payable->remaining_amount, 0, ',', '.') }}"
+                             title="Utang: {{ $payable->supplier_name }} - Rp {{ number_format($payable->remaining_amount, 0, ',', '.') }} ({{ $payable->promise_to_pay_date ? 'Janji Bayar' : 'Jatuh Tempo' }})"
                              wire:click="$dispatch('editPayable', { id: {{ $payable->id }} })">
-                            💸 {{ $payable->supplier_name }}
+                            {{ $payable->promise_to_pay_date ? '🤝' : '💸' }} {{ $payable->supplier_name }}
                         </div>
                     @endforeach
 

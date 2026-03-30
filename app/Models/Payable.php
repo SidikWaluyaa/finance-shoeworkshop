@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property \Carbon\Carbon $due_date
+ * @property \Carbon\Carbon|null $promise_to_pay_date
  * @property string $status
  * @property float $total
  */
@@ -15,11 +16,12 @@ class Payable extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['supplier_name', 'total', 'status', 'due_date', 'description'];
+    protected $fillable = ['supplier_name', 'total', 'status', 'due_date', 'promise_to_pay_date', 'description'];
 
     protected $casts = [
         'total' => 'decimal:2',
         'due_date' => 'date',
+        'promise_to_pay_date' => 'date',
     ];
 
     public function transactions(): HasMany
