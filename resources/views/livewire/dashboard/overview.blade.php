@@ -44,6 +44,23 @@
         </div>
     </div>
 
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+
     {{-- ===== HERO: Health Score + Saldo ===== --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
 
@@ -103,7 +120,7 @@
         <div class="lg:col-span-4 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl"
              style="background: linear-gradient(135deg, #1A160F 0%, #221C15 100%);">
             <div class="relative z-10 flex flex-col h-full">
-                <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center justify-between mb-4 shrink-0">
                     <div class="flex items-center gap-2">
                         <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-white/10">
                             <span class="text-sm">💸</span>
@@ -113,7 +130,7 @@
                     <a href="{{ route('payables') }}" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-amber-400 transition">Bayar Utang</a>
                 </div>
 
-                <div class="space-y-2.5 flex-1">
+                <div class="space-y-2.5 flex-1 max-h-[310px] overflow-y-auto pr-1.5 custom-scrollbar">
                     @forelse($priorityPayables as $p)
                     <div class="flex items-center justify-between p-2.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition cursor-pointer"
                          wire:click="$dispatch('editPayable', { id: {{ $p->id }} })">
@@ -143,7 +160,7 @@
                     @endforelse
                 </div>
 
-                <div class="mt-4 pt-4 border-t border-white/5">
+                <div class="mt-4 pt-4 border-t border-white/5 shrink-0">
                     <div class="flex items-center justify-between">
                         <p class="text-[9px] font-bold uppercase tracking-widest opacity-40">Total Kewajiban</p>
                         <p class="text-xs font-black text-rose-400">Rp {{ number_format($summary['total_payables'] ?? 0, 0, ',', '.') }}</p>

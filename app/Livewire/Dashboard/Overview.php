@@ -61,7 +61,7 @@ class Overview extends Component
         $this->todaySummary = $financeService->getTodaySummary();
         $this->todayInvoices = $financeService->getTodayInvoices();
         $this->activeRabs = $financeService->getActiveRabs();
-        $this->priorityPayables = $financeService->getPriorityPayables(4);
+        $this->priorityPayables = $financeService->getPriorityPayables();
     }
 
     public function formatCurrencyShort($value): string
