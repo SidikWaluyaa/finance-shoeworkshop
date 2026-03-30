@@ -269,6 +269,17 @@ class FinanceService
     }
 
     /**
+     * Get priority payables (unpaid, ordered by promise_to_pay_date).
+     */
+    public function getPriorityPayables(int $limit = 4)
+    {
+        return Payable::where('status', '!=', 'paid')
+            ->orderByRaw('COALESCE(promise_to_pay_date, due_date) ASC')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
      * Get last 7 days trend data for sparkline charts.
      */
     private function getLast7DaysData(string $type): array

@@ -47,63 +47,101 @@
     {{-- ===== HERO: Health Score + Saldo ===== --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
 
-        {{-- Health Score Card (dark glass style) --}}
-        <div class="lg:col-span-8 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden shadow-xl"
-             style="background: linear-gradient(135deg, #0F1511 0%, #152217 50%, #0F1F1A 100%);">
-            {{-- Glow blobs --}}
-            <div class="absolute top-0 right-0 w-64 h-64 rounded-full -mr-20 -mt-20 pointer-events-none"
-                 style="background: radial-gradient(circle, rgba(34,175,133,0.2) 0%, transparent 70%);"></div>
-            <div class="absolute bottom-0 left-1/2 w-48 h-48 rounded-full pointer-events-none"
-                 style="background: radial-gradient(circle, rgba(255,194,50,0.08) 0%, transparent 70%);"></div>
-
-            <div class="relative z-10 flex flex-col sm:flex-row items-center gap-8">
-                {{-- Score Ring --}}
-                <div class="relative flex-shrink-0">
-                    <svg width="150" height="150" viewBox="0 0 140 140">
-                        <circle cx="70" cy="70" r="60" stroke="rgba(255,255,255,0.06)" stroke-width="10" fill="none"/>
-                        <circle cx="70" cy="70" r="60"
-                                stroke="url(#scoreGrad)" stroke-width="12" fill="none"
-                                stroke-dasharray="{{ 2 * 3.14159 * 60 }}"
-                                stroke-dashoffset="{{ 2 * 3.14159 * 60 * (1 - ($healthScore['total'] ?? 0) / 100) }}"
-                                stroke-linecap="round"
-                                transform="rotate(-90 70 70)"
-                                style="transition: stroke-dashoffset 1s ease-out;"/>
-                        <defs>
-                            <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#FFC232"/>
-                                <stop offset="100%" style="stop-color:#22AF85"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="text-4xl font-black leading-none">{{ $healthScore['total'] ?? 0 }}</span>
-                        <span class="text-[9px] uppercase font-bold tracking-[0.18em] opacity-50 mt-1">Indeks Kesehatan</span>
+        {{-- COLUMN 1: RAB REGULER --}}
+        <div class="lg:col-span-4 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl"
+             style="background: linear-gradient(135deg, #0F1511 0%, #152217 100%);">
+            <div class="relative z-10 flex flex-col h-full">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-white/10">
+                            <span class="text-sm">📋</span>
+                        </div>
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-emerald-400">RAB Reguler</h3>
                     </div>
+                    <a href="{{ route('rabs') }}" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-emerald-400 transition">Lihat Semua</a>
                 </div>
 
-                {{-- Metric mini-cards --}}
-                <div class="flex-1 w-full">
-                    <h3 class="text-base font-bold mb-0.5">Performa Keuangan</h3>
-                    <p class="text-xs text-white/50 mb-5">
-                        Berdasarkan data {{ $period === 'this_month' ? 'bulan ini' : ($period === '3_months' ? '3 bulan terakhir' : 'historis') }}.
-                    </p>
-                    <div class="grid grid-cols-3 gap-3">
-                        @php
-                            $metrics = [
-                                ['label' => 'Arus Kas', 'val' => $healthScore['cashflow'] ?? 0, 'color' => '#22AF85'],
-                                ['label' => 'Utang',    'val' => $healthScore['payable']  ?? 0, 'color' => '#FFC232'],
-                                ['label' => 'Anggaran', 'val' => $healthScore['rab']       ?? 0, 'color' => '#3DC99D'],
-                            ];
-                        @endphp
-                        @foreach($metrics as $m)
-                        <div class="bg-white/5 border border-white/10 rounded-2xl p-3 hover:bg-white/8 transition">
-                            <p class="text-[10px] font-semibold opacity-60 mb-2">{{ $m['label'] }}</p>
-                            <p class="text-xl font-black leading-none mb-2">{{ $m['val'] }}%</p>
-                            <div class="h-1 bg-white/10 rounded-full overflow-hidden">
-                                <div class="h-full rounded-full transition-all duration-700" style="width:{{ $m['val'] }}%; background:{{ $m['color'] }};"></div>
+                <div class="space-y-4 flex-1">
+                    @forelse(collect($activeRabs['items'])->take(3) as $rab)
+                    <div class="group">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[11px] font-bold truncate max-w-[140px]">{{ $rab['name'] }}</span>
+                            <span class="text-[11px] font-black text-emerald-400">{{ $rab['percent'] }}%</span>
+                        </div>
+                        <div class="h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                            <div class="h-full rounded-full transition-all duration-1000 ease-out"
+                                 style="width: {{ min($rab['percent'], 100) }}%; background: linear-gradient(90deg, #22AF85, #3DC99D);"></div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="flex flex-col items-center justify-center py-8 opacity-40">
+                        <span class="text-2xl mb-2">📊</span>
+                        <p class="text-[10px] font-bold uppercase tracking-widest">Belum ada RAB</p>
+                    </div>
+                    @endforelse
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                    <div>
+                        <p class="text-[9px] font-bold uppercase tracking-widest opacity-40 mb-0.5">Total Budget</p>
+                        <p class="text-xs font-black">{{ $this->formatCurrencyShort($activeRabs['total_budget'] ?? 0) }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-bold uppercase tracking-widest opacity-40 mb-0.5">Tersedia</p>
+                        <p class="text-xs font-black text-emerald-400">{{ $this->formatCurrencyShort($activeRabs['total_remaining'] ?? 0) }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- COLUMN 2: DAFTAR UTANG --}}
+        <div class="lg:col-span-4 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl"
+             style="background: linear-gradient(135deg, #1A160F 0%, #221C15 100%);">
+            <div class="relative z-10 flex flex-col h-full">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-white/10">
+                            <span class="text-sm">💸</span>
+                        </div>
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-amber-400">Daftar Utang</h3>
+                    </div>
+                    <a href="{{ route('payables') }}" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-amber-400 transition">Bayar Utang</a>
+                </div>
+
+                <div class="space-y-2.5 flex-1">
+                    @forelse($priorityPayables as $p)
+                    <div class="flex items-center justify-between p-2.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition cursor-pointer"
+                         wire:click="$dispatch('editPayable', { id: {{ $p->id }} })">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-white/5 text-xs">
+                                {{ $p->promise_to_pay_date ? '🤝' : '📅' }}
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-[11px] font-bold truncate">{{ $p->supplier_name }}</p>
+                                <p class="text-[9px] font-black {{ $p->isOverdue() ? 'text-rose-400' : 'opacity-40' }} uppercase tracking-tighter">
+                                    {{ $p->promise_to_pay_date ? 'Janji: ' . $p->promise_to_pay_date->format('d M') : 'Tempo: ' . $p->due_date->format('d M') }}
+                                </p>
                             </div>
                         </div>
-                        @endforeach
+                        <div class="text-right shrink-0">
+                            <p class="text-[11px] font-black text-rose-400">{{ $this->formatCurrencyShort($p->remaining_amount) }}</p>
+                            @if($p->payment_status === 'partial')
+                            <span class="text-[8px] font-black bg-amber-400/20 text-amber-400 px-1 py-0.5 rounded uppercase">Dicicil</span>
+                            @endif
+                        </div>
+                    </div>
+                    @empty
+                    <div class="flex flex-col items-center justify-center py-8 opacity-40">
+                        <span class="text-2xl mb-2">🙌</span>
+                        <p class="text-[10px] font-bold uppercase tracking-widest">Bebas Utang!</p>
+                    </div>
+                    @endforelse
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-white/5">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[9px] font-bold uppercase tracking-widest opacity-40">Total Kewajiban</p>
+                        <p class="text-xs font-black text-rose-400">Rp {{ number_format($summary['total_payables'] ?? 0, 0, ',', '.') }}</p>
                     </div>
                 </div>
             </div>

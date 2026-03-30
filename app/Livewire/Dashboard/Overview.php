@@ -19,6 +19,7 @@ class Overview extends Component
     public array $todaySummary = [];
     public array $todayInvoices = [];
     public array $activeRabs = [];
+    public $priorityPayables = [];
 
     protected $listeners = ['dataUpdated' => 'refreshData'];
 
@@ -60,6 +61,7 @@ class Overview extends Component
         $this->todaySummary = $financeService->getTodaySummary();
         $this->todayInvoices = $financeService->getTodayInvoices();
         $this->activeRabs = $financeService->getActiveRabs();
+        $this->priorityPayables = $financeService->getPriorityPayables(4);
     }
 
     public function formatCurrencyShort($value): string
