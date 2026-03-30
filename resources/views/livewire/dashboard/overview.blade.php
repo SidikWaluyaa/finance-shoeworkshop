@@ -65,8 +65,13 @@
                     @forelse(collect($activeRabs['items'])->take(3) as $rab)
                     <div class="group">
                         <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[11px] font-bold truncate max-w-[140px]">{{ $rab['name'] }}</span>
-                            <span class="text-[11px] font-black text-emerald-400">{{ $rab['percent'] }}%</span>
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-[11px] font-bold truncate">{{ $rab['name'] }}</span>
+                                <span class="text-[9px] opacity-40 font-black uppercase tracking-tighter">Budget: {{ $this->formatCurrencyShort($rab['total_budget']) }}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[11px] font-black text-emerald-400">{{ $rab['percent'] }}%</span>
+                            </div>
                         </div>
                         <div class="h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
                             <div class="h-full rounded-full transition-all duration-1000 ease-out"
