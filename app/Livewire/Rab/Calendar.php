@@ -15,6 +15,7 @@ class Calendar extends Component
     public $monthName;
 
     public $rabs = [];
+    public $payables = [];
 
     protected $listeners = ['dataUpdated' => 'loadRabs'];
 
@@ -48,6 +49,9 @@ class Calendar extends Component
                         ->where('end_date', '>', $endOfMonth);
                   });
         })->get();
+
+        $this->payables = \App\Models\Payable::whereBetween('due_date', [$startOfMonth, $endOfMonth])
+            ->get();
     }
 
     public function previousMonth()
