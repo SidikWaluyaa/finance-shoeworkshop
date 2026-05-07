@@ -49,6 +49,18 @@ class TransactionService
     }
 
     /**
+     * Soft delete multiple transactions.
+     */
+    public function bulkDelete(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $count = Transaction::whereIn('id', $ids)->delete();
+            $this->clearDashboardCache();
+            return $count;
+        });
+    }
+
+    /**
      * Permanently delete a transaction.
      */
     public function forceDelete(int $id): bool
@@ -63,6 +75,30 @@ class TransactionService
             $deleted = $transaction->forceDelete();
             $this->clearDashboardCache();
             return $deleted;
+        });
+    }
+
+    /**
+     * Permanently delete multiple transactions.
+     */
+    public function bulkForceDelete(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $transactions = Transaction::onlyTrashed()->whereIn('id', $ids)->get();
+            $count = 0;
+            
+            /** @var Transaction $transaction */
+            foreach ($transactions as $transaction) {
+                if ($transaction->evidence_path) {
+                    Storage::disk('public')->delete($transaction->evidence_path);
+                }
+                if ($transaction->forceDelete()) {
+                    $count++;
+                }
+            }
+            
+            $this->clearDashboardCache();
+            return $count;
         });
     }
 

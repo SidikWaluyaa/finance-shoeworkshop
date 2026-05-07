@@ -10,6 +10,7 @@ use App\Models\Account;
 use App\Models\Category;
 
 use App\Services\PdfService;
+use App\Services\InvoiceService;
 
 class Index extends Component
 {
@@ -17,6 +18,8 @@ class Index extends Component
 
     public string $search = '';
     public string $filterStatus = '';
+    public array $selectedRows = [];
+    public bool $selectAll = false;
 
     protected $listeners = ['dataUpdated' => '$refresh'];
 
@@ -25,60 +28,68 @@ class Index extends Component
         $this->resetPage();
     }
 
+    public function updatedSelectAll(bool $value): void
+    {
+        if ($value) {
+            $this->selectedRows = $this->getInvoicesQuery()->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        } else {
+            $this->selectedRows = [];
+        }
+    }
+
+    public function updatedSelectedRows(): void
+    {
+        $this->selectAll = false;
+    }
+
     public function download(int $id, PdfService $service)
     {
         $invoice = Invoice::findOrFail($id);
         return $service->downloadInvoice($invoice);
     }
 
-    public function markAsPaid(int $id): void
+    public function markAsPaid(int $id, InvoiceService $service): void
     {
-        $invoice = Invoice::findOrFail($id);
-
-        if ($invoice->isPaid()) return;
-
-        // Auto-create income transaction
-        $account = Account::first();
-        $category = Category::where('type', 'income')->first();
-
-        if (!$account) {
-            session()->flash('error', 'Silakan buat akun keuangan terlebih dahulu.');
-            return;
+        try {
+            $service->markAsPaid($id);
+            $this->dispatch('dataUpdated');
+            $this->dispatch('alert', [
+                'type' => 'success',
+                'message' => 'Pembayaran berhasil dicatat!'
+            ]);
+        } catch (\Exception $e) {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => $e->getMessage()
+            ]);
         }
-
-        Transaction::create([
-            'account_id' => $account->id,
-            'type' => 'income',
-            'amount' => $invoice->remaining_amount,
-            'category_id' => $category?->id,
-            'source_type' => 'B2B',
-            'description' => 'Pembayaran invoice: ' . $invoice->client_name,
-            'date' => now()->toDateString(),
-            'invoice_id' => $invoice->id,
-        ]);
-
-        $invoice->refresh();
-        $invoice->update(['status' => $invoice->payment_status]);
-
-        $this->dispatch('dataUpdated');
-        $this->dispatch('alert', [
-            'type' => 'success',
-            'message' => 'Pembayaran berhasil dicatat!'
-        ]);
     }
 
-    public function delete(int $id): void
+    public function delete(int $id, InvoiceService $service): void
     {
         $this->authorize('delete invoices');
-        
-        $invoice = Invoice::findOrFail($id);
-        $invoice->delete();
+        $service->delete($id);
         
         $this->dispatch('dataUpdated');
         $this->dispatch('alert', ['type' => 'success', 'message' => 'Invoice dipindahkan ke Tempat Sampah.']);
     }
 
-    public function render()
+    public function bulkDelete(): void
+    {
+        $this->authorize('delete invoices');
+        
+        if (empty($this->selectedRows)) return;
+
+        $count = Invoice::whereIn('id', $this->selectedRows)->delete();
+
+        $this->selectedRows = [];
+        $this->selectAll = false;
+
+        $this->dispatch('dataUpdated');
+        $this->dispatch('alert', ['type' => 'success', 'message' => "$count invoice berhasil dihapus."]);
+    }
+
+    private function getInvoicesQuery()
     {
         $query = Invoice::orderBy('due_date', 'asc');
 
@@ -90,8 +101,13 @@ class Index extends Component
             $query->where('status', $this->filterStatus);
         }
 
+        return $query;
+    }
+
+    public function render()
+    {
         return view('livewire.invoice.index', [
-            'invoices' => $query->paginate(15),
+            'invoices' => $this->getInvoicesQuery()->paginate(15),
         ]);
     }
 }

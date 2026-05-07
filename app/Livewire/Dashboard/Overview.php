@@ -12,14 +12,14 @@ class Overview extends Component
     public array $summary = [];
     public array $healthScore = [];
     public array $insights = [];
-    public $recentTransactions;
+    public mixed $recentTransactions;
     public string $period = 'this_month'; // this_month, 3_months, this_year, all
 
     // New: Today's real-time data
     public array $todaySummary = [];
     public array $todayInvoices = [];
     public array $activeRabs = [];
-    public $priorityPayables = [];
+    public mixed $priorityPayables = [];
 
     protected $listeners = ['dataUpdated' => 'refreshData'];
 
@@ -64,7 +64,7 @@ class Overview extends Component
         $this->priorityPayables = $financeService->getPriorityPayables();
     }
 
-    public function formatCurrencyShort($value): string
+    public function formatCurrencyShort(int|float $value): string
     {
         $value = (float) $value;
         $abs = abs($value);

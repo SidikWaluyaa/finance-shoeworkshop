@@ -24,7 +24,7 @@ class Form extends Component
     public string $date = '';
     public ?int $rab_id = null;
     public ?int $expense_location_id = null;
-    public $evidence;
+    public mixed $evidence;
     public ?string $existingEvidence = null;
 
     public bool $showModal = false;

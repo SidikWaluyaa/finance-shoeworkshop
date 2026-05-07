@@ -45,6 +45,29 @@
             </select>
         </div>
     </div>
+    
+    {{-- Bulk Action Bar --}}
+    @if(count($selectedRows) > 0)
+        <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div class="bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-6 border border-slate-800">
+                <div class="flex items-center gap-2 border-r border-slate-700 pr-6">
+                    <span class="flex items-center justify-center w-6 h-6 bg-primary text-[10px] font-bold rounded-full text-white">{{ count($selectedRows) }}</span>
+                    <span class="text-sm font-medium text-slate-300">Transaksi dipilih</span>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button wire:click="bulkDelete" wire:confirm="Hapus {{ count($selectedRows) }} transaksi yang dipilih?" class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-red-500/10 text-red-400 transition-colors text-sm font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        Hapus Terpilih
+                    </button>
+                    
+                    <button wire:click="$set('selectedRows', [])" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 
     {{-- Table --}}
     <div class="card">
@@ -52,6 +75,11 @@
             <table class="data-table">
                 <thead>
                     <tr>
+                        <th class="w-10">
+                            <div class="flex items-center justify-center">
+                                <input type="checkbox" wire:model.live="selectAll" class="form-checkbox h-4 w-4 text-primary transition duration-150 ease-in-out rounded border-gray-300 focus:ring-primary">
+                            </div>
+                        </th>
                         <th>Tanggal</th>
                         <th>Deskripsi</th>
                         <th>Lokasi</th>
@@ -65,7 +93,12 @@
                 </thead>
                 <tbody>
                     @forelse($transactions as $tx)
-                        <tr wire:key="tx-{{ $tx->id }}">
+                        <tr wire:key="tx-{{ $tx->id }}" class="{{ in_array($tx->id, $selectedRows) ? 'bg-primary/5 dark:bg-primary/10' : '' }} transition-colors">
+                            <td>
+                                <div class="flex items-center justify-center">
+                                    <input type="checkbox" wire:model.live="selectedRows" value="{{ $tx->id }}" class="form-checkbox h-4 w-4 text-primary transition duration-150 ease-in-out rounded border-gray-300 focus:ring-primary">
+                                </div>
+                            </td>
                             <td class="whitespace-nowrap">{{ $tx->date->format('d/m/Y') }}</td>
                             <td>
                                 <div class="max-w-xs truncate font-medium text-[var(--color-dark)]">{{ $tx->description ?: '-' }}</div>
@@ -117,11 +150,10 @@
                                 @endcan
                             </div>
                         </td>
-
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="text-center py-16">
+                        <td colspan="10" class="text-center py-16">
                             <div class="flex flex-col items-center justify-center space-y-3 prose-sm mx-auto">
                                 <div class="w-16 h-16 rounded-3xl bg-slate-50 dark:bg-[var(--color-dm-surface2)]/50 flex items-center justify-center">
                                     <span class="text-2xl">📝</span>

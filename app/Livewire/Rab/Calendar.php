@@ -8,11 +8,11 @@ use Carbon\Carbon;
 
 class Calendar extends Component
 {
-    public $currentMonth;
-    public $currentYear;
-    public $daysInMonth;
-    public $firstDayOfMonth;
-    public $monthName;
+    public int $currentMonth;
+    public int $currentYear;
+    public int $daysInMonth;
+    public int $firstDayOfMonth;
+    public string $monthName;
 
     public $rabs = [];
     public $payables = [];

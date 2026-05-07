@@ -18,6 +18,65 @@ class Index extends Component
     use WithPagination;
 
     public string $typeFilter = 'all';
+    public array $selectedItems = [];
+    public bool $selectAll = false;
+
+    public function updatingTypeFilter(): void
+    {
+        $this->selectedItems = [];
+        $this->selectAll = false;
+    }
+
+    public function updatedSelectAll(bool $value): void
+    {
+        if ($value) {
+            $items = [];
+            
+            if ($this->typeFilter === 'all' || $this->typeFilter === 'transaction') {
+                $ids = Transaction::onlyTrashed()->pluck('id');
+                foreach ($ids as $id) $items[] = "transaction-$id";
+            }
+            
+            if ($this->typeFilter === 'all' || $this->typeFilter === 'rab') {
+                $ids = Rab::onlyTrashed()->pluck('id');
+                foreach ($ids as $id) $items[] = "rab-$id";
+            }
+            
+            if ($this->typeFilter === 'all' || $this->typeFilter === 'invoice') {
+                $ids = Invoice::onlyTrashed()->pluck('id');
+                foreach ($ids as $id) $items[] = "invoice-$id";
+            }
+
+            if ($this->typeFilter === 'all' || $this->typeFilter === 'payable') {
+                $ids = Payable::onlyTrashed()->pluck('id');
+                foreach ($ids as $id) $items[] = "payable-$id";
+            }
+
+            if ($this->typeFilter === 'all' || $this->typeFilter === 'account') {
+                $ids = Account::onlyTrashed()->pluck('id');
+                foreach ($ids as $id) $items[] = "account-$id";
+            }
+
+            if ($this->typeFilter === 'all' || $this->typeFilter === 'category') {
+                $ids = Category::onlyTrashed()->pluck('id');
+                foreach ($ids as $id) $items[] = "category-$id";
+            }
+
+            if ($this->typeFilter === 'all' || $this->typeFilter === 'location') {
+                $ids = ExpenseLocation::onlyTrashed()->pluck('id');
+                foreach ($ids as $id) $items[] = "location-$id";
+            }
+            
+            $this->selectedItems = $items;
+        } else {
+            $this->selectedItems = [];
+        }
+    }
+
+    public function updatedSelectedItems(): void
+    {
+        $this->selectAll = false;
+    }
 
     public function restore(string $type, int $id, \App\Services\TransactionService $transactionService, \App\Services\RabService $rabService): void
     {
@@ -45,6 +104,67 @@ class Index extends Component
         if ($deleted) {
             $this->dispatch('alert', ['type' => 'success', 'message' => 'Data berhasil dihapus permanen!']);
         }
+    }
+
+    public function bulkRestore(\App\Services\TransactionService $transactionService, \App\Services\RabService $rabService): void
+    {
+        if (empty($this->selectedItems)) return;
+
+        $grouped = $this->groupSelectedItems();
+        $count = 0;
+
+        foreach ($grouped as $type => $ids) {
+            foreach ($ids as $id) {
+                $restored = match ($type) {
+                    'transaction' => $transactionService->restore($id),
+                    'rab' => $rabService->restore($id),
+                    'invoice', 'payable', 'account', 'category', 'location' => $this->getModel($type, $id)?->restore(),
+                    default => false,
+                };
+                if ($restored) $count++;
+            }
+        }
+
+        $this->selectedItems = [];
+        $this->selectAll = false;
+        $this->dispatch('alert', ['type' => 'success', 'message' => "$count data berhasil dipulihkan!"]);
+    }
+
+    public function bulkForceDelete(\App\Services\TransactionService $transactionService, \App\Services\RabService $rabService): void
+    {
+        if (empty($this->selectedItems)) return;
+
+        $grouped = $this->groupSelectedItems();
+        $count = 0;
+
+        foreach ($grouped as $type => $ids) {
+            $count += match ($type) {
+                'transaction' => $transactionService->bulkForceDelete($ids),
+                'rab' => $rabService->bulkForceDelete($ids),
+                'invoice' => Invoice::onlyTrashed()->whereIn('id', $ids)->forceDelete(),
+                'payable' => Payable::onlyTrashed()->whereIn('id', $ids)->forceDelete(),
+                'account' => Account::onlyTrashed()->whereIn('id', $ids)->forceDelete(),
+                'category' => Category::onlyTrashed()->whereIn('id', $ids)->forceDelete(),
+                'location' => ExpenseLocation::onlyTrashed()->whereIn('id', $ids)->forceDelete(),
+                default => 0,
+            };
+        }
+
+        $this->selectedItems = [];
+        $this->selectAll = false;
+        $this->dispatch('alert', ['type' => 'success', 'message' => "$count data berhasil dihapus permanen!"]);
+    }
+
+    private function groupSelectedItems(): array
+    {
+        $grouped = [];
+        foreach ($this->selectedItems as $item) {
+            if (str_contains($item, '-')) {
+                [$type, $id] = explode('-', $item);
+                $grouped[$type][] = (int)$id;
+            }
+        }
+        return $grouped;
     }
 
     private function getModel(string $type, int $id)

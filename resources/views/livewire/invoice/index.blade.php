@@ -25,12 +25,40 @@
         </div>
     </div>
 
+    {{-- Bulk Action Bar --}}
+    @if(count($selectedRows) > 0)
+        <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div class="bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-6 border border-slate-800">
+                <div class="flex items-center gap-2 border-r border-slate-700 pr-6">
+                    <span class="flex items-center justify-center w-6 h-6 bg-[var(--color-primary)] text-[10px] font-bold rounded-full text-white">{{ count($selectedRows) }}</span>
+                    <span class="text-sm font-medium text-slate-300">Data dipilih</span>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button wire:click="bulkDelete" wire:confirm="Hapus {{ count($selectedRows) }} invoice terpilih?" class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-red-500/10 text-red-400 transition-colors text-sm font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        Hapus Terpilih
+                    </button>
+                    
+                    <button wire:click="$set('selectedRows', [])" class="ml-2 text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Table --}}
     <div class="card">
         <div class="table-responsive">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <th class="w-10">
+                            <div class="flex items-center justify-center">
+                                <input type="checkbox" wire:model.live="selectAll" class="form-checkbox h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-600 text-[var(--color-primary)] focus:ring-[var(--color-primary)]">
+                            </div>
+                        </th>
                         <th>Klien</th>
                         <th class="text-right">Total</th>
                         <th>Status</th>
@@ -40,7 +68,12 @@
                 </thead>
                 <tbody>
                     @forelse($invoices as $inv)
-                        <tr wire:key="inv-{{ $inv->id }}">
+                        <tr wire:key="inv-{{ $inv->id }}" class="{{ in_array($inv->id, $selectedRows) ? 'bg-primary-50/30 dark:bg-primary-900/10' : '' }}">
+                            <td>
+                                <div class="flex items-center justify-center">
+                                    <input type="checkbox" wire:model.live="selectedRows" value="{{ $inv->id }}" class="form-checkbox h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-[var(--color-primary)] focus:ring-[var(--color-primary)]">
+                                </div>
+                            </td>
                             <td class="font-medium">{{ $inv->client_name }}</td>
                             <td class="text-right whitespace-nowrap">
                                 <span class="font-semibold block">Rp {{ number_format($inv->total, 0, ',', '.') }}</span>
@@ -84,7 +117,7 @@
                         </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center py-16">
+                        <td colspan="6" class="text-center py-16">
                             <div class="flex flex-col items-center justify-center space-y-3">
                                 <div class="w-20 h-20 rounded-[2.5rem] bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
                                     <span class="text-3xl">🎉</span>

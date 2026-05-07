@@ -41,6 +41,18 @@ class PayableService
     }
 
     /**
+     * Delete multiple payables.
+     */
+    public function bulkDelete(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            // We only delete unpaid or partially paid ones that don't have transactions?
+            // Actually soft delete is fine.
+            return Payable::whereIn('id', $ids)->delete();
+        });
+    }
+
+    /**
      * Mark payable as paid — creates expense transaction atomically.
      */
     public function markAsPaid(int $payableId, int $accountId, ?float $amount = null): Transaction

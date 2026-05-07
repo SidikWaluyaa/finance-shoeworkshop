@@ -31,7 +31,7 @@ class TransactionsImport implements ToModel, WithHeadingRow, WithValidation, Ski
     /**
      * Parse amount from any currency format (US: 123,456.78 or ID: 123.456,78)
      */
-    private function parseAmount($raw): float
+    private function parseAmount(mixed $raw): float
     {
         if ($raw === null || $raw === '') {
             return 0;

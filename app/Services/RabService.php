@@ -70,6 +70,28 @@ class RabService
     }
 
     /**
+     * Permanently delete multiple RABs.
+     */
+    public function bulkForceDelete(array $ids): int
+    {
+        return DB::transaction(function () use ($ids) {
+            $rabs = Rab::onlyTrashed()->whereIn('id', $ids)->get();
+            $count = 0;
+            
+            /** @var Rab $rab */
+            foreach ($rabs as $rab) {
+                $rab->items()->forceDelete();
+                if ($rab->forceDelete()) {
+                    $count++;
+                }
+            }
+            
+            $this->clearDashboardCache();
+            return $count;
+        });
+    }
+
+    /**
      * Restore a soft-deleted RAB.
      */
     public function restore(int $id): bool

@@ -51,9 +51,12 @@ class FinanceService
      */
     public function getTotalReceivables(): float
     {
-        return (float) Invoice::where('status', '!=', 'paid')
-            ->get()
-            ->sum(fn($invoice) => $invoice->remaining_amount);
+        $total = Invoice::where('status', '!=', 'paid')->sum('total');
+        $paid = Transaction::whereIn('invoice_id', function($query) {
+            $query->select('id')->from('invoices')->where('status', '!=', 'paid');
+        })->sum('amount');
+        
+        return (float) max(0, $total - $paid);
     }
 
     /**
@@ -75,15 +78,22 @@ class FinanceService
     public function getMonthlyData(int $months = 6): array
     {
         $data = ['labels' => [], 'income' => [], 'expense' => []];
+        $startDate = Carbon::now()->subMonths($months - 1)->startOfMonth();
+
+        $transactions = Transaction::selectRaw('DATE_FORMAT(date, "%b %Y") as month_label, type, SUM(amount) as total')
+            ->where('date', '>=', $startDate->toDateString())
+            ->groupBy('month_label', 'type')
+            ->get()
+            ->groupBy('month_label');
 
         for ($i = $months - 1; $i >= 0; $i--) {
             $date = Carbon::now()->subMonths($i);
-            $startOfMonth = $date->copy()->startOfMonth()->toDateString();
-            $endOfMonth = $date->copy()->endOfMonth()->toDateString();
-
-            $data['labels'][] = $date->format('M Y');
-            $data['income'][] = $this->getTotalIncome($startOfMonth, $endOfMonth);
-            $data['expense'][] = $this->getTotalExpense($startOfMonth, $endOfMonth);
+            $label = $date->format('M Y');
+            $data['labels'][] = $label;
+            
+            $monthTransactions = $transactions->get($label) ?? collect();
+            $data['income'][] = (float) ($monthTransactions->where('type', 'income')->first()?->total ?? 0);
+            $data['expense'][] = (float) ($monthTransactions->where('type', 'expense')->first()?->total ?? 0);
         }
 
         return $data;
@@ -288,13 +298,18 @@ class FinanceService
      */
     private function getLast7DaysData(string $type): array
     {
+        $startDate = Carbon::today()->subDays(6)->toDateString();
+        
+        $dailyTotals = Transaction::where('type', $type)
+            ->where('date', '>=', $startDate)
+            ->selectRaw('date, SUM(amount) as total')
+            ->groupBy('date')
+            ->pluck('total', 'date');
+
         $data = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i)->toDateString();
-            $amount = (float) Transaction::where('type', $type)
-                ->where('date', $date)
-                ->sum('amount');
-            $data[] = $amount;
+            $data[] = (float) ($dailyTotals[$date] ?? 0);
         }
         return $data;
     }
@@ -325,12 +340,19 @@ class FinanceService
      */
     public function getDashboardSummary(?string $startDate = null, ?string $endDate = null): array
     {
-        $accounts = Account::all();
+        $accounts = Account::withSum(['transactions as income' => function($q) {
+            $q->where('type', 'income');
+        }], 'amount')
+        ->withSum(['transactions as expense' => function($q) {
+            $q->where('type', 'expense');
+        }], 'amount')
+        ->get();
+
         $totalBalance = 0;
         $accountBalances = [];
 
         foreach ($accounts as $account) {
-            $balance = $account->realtime_balance;
+            $balance = (float) ($account->income ?? 0) - (float) ($account->expense ?? 0);
             $totalBalance += $balance;
             $accountBalances[] = [
                 'name' => $account->name,
@@ -339,18 +361,22 @@ class FinanceService
             ];
         }
 
+        // Optimized Payable Summing
+        $totalPayables = (float) Payable::where('status', '!=', 'paid')->sum('total');
+        $paidPayables = (float) Transaction::whereIn('payable_id', function($q) {
+            $q->select('id')->from('payables')->where('status', '!=', 'paid');
+        })->sum('amount');
+        
+        $remainingPayables = max(0, $totalPayables - $paidPayables);
+
         return [
             'total_income' => $this->getTotalIncome($startDate, $endDate),
             'total_expense' => $this->getTotalExpense($startDate, $endDate),
             'net_cashflow' => $this->getNetCashflow($startDate, $endDate),
             'total_receivables' => $this->getTotalReceivables(),
             'remaining_budget' => $this->getRemainingBudget(),
-            'total_payables' => (float) Payable::where('status', '!=', 'paid')
-                ->get()
-                ->sum(fn($p) => $p->remaining_amount),
-            'paid_payables' => (float) Payable::sum('total') - (float) Payable::where('status', '!=', 'paid')
-                ->get()
-                ->sum(fn($p) => $p->remaining_amount),
+            'total_payables' => $remainingPayables,
+            'paid_payables' => (float) Payable::sum('total') - $remainingPayables,
             'total_balance' => $totalBalance,
             'account_balances' => $accountBalances,
             'mom' => $this->getMoMComparison(),

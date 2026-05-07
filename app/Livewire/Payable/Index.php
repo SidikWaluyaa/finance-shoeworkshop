@@ -18,12 +18,28 @@ class Index extends Component
     public string $payAmount = '';
     public bool $showPayModal = false;
     public ?int $payingId = null;
+    public array $selectedRows = [];
+    public bool $selectAll = false;
 
     protected $listeners = ['dataUpdated' => '$refresh'];
 
     public function updatingSearch(): void
     {
         $this->resetPage();
+    }
+
+    public function updatedSelectAll(bool $value): void
+    {
+        if ($value) {
+            $this->selectedRows = $this->getPayablesQuery()->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        } else {
+            $this->selectedRows = [];
+        }
+    }
+
+    public function updatedSelectedRows(): void
+    {
+        $this->selectAll = false;
     }
 
     public function confirmPay(int $id): void
@@ -82,7 +98,22 @@ class Index extends Component
         $this->dispatch('alert', ['type' => 'success', 'message' => 'Data utang dipindahkan ke Tempat Sampah.']);
     }
 
-    public function render()
+    public function bulkDelete(PayableService $service): void
+    {
+        $this->authorize('delete payables');
+        
+        if (empty($this->selectedRows)) return;
+
+        $count = $service->bulkDelete($this->selectedRows);
+
+        $this->selectedRows = [];
+        $this->selectAll = false;
+
+        $this->dispatch('dataUpdated');
+        $this->dispatch('alert', ['type' => 'success', 'message' => "$count data utang berhasil dihapus."]);
+    }
+
+    private function getPayablesQuery()
     {
         $query = Payable::orderBy('due_date', 'asc');
 
@@ -94,8 +125,13 @@ class Index extends Component
             $query->where('status', $this->filterStatus);
         }
 
+        return $query;
+    }
+
+    public function render()
+    {
         return view('livewire.payable.index', [
-            'payables' => $query->paginate(15),
+            'payables' => $this->getPayablesQuery()->paginate(15),
             'accounts' => Account::all(),
         ]);
     }
